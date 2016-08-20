@@ -1,0 +1,114 @@
+Target: Ubuntu 10.04
+>>Tips: Install ubuntu10.04-64 on XP is OK, ubuntu12.04-64 CANNOT(2012.5.20)
+1. update sources.list
+	#for sun-java6-jdk
+	sudo add-apt-repository ppa:ferramroberto/java
+	#for inputmethod
+	sudo add-apt-repository ppa:shawn-p-huang/ppa 
+	sudo apt-get update
+2. install sun-java6-jdk
+	# deb http://us.archive.ubuntu.com/ubuntu/ hardy multiverse
+	$ sudo apt-get update && sudo apt-get install -y sun-java6-jdk
+	/** OR **/ http://www.oracle.com/technetwork/java/javase/downloads/index.html
+	download sun-java6-jdk, uncompress
+	copy /usr/lib/jvm <OR> copy $HOME/dir/usr/lib/jvm
+	$ sudo ln /usr/lib/jvm/jdk-1.6.0.x -s /usr/lib/jvm/java-6-sun
+	vi .bashrc
+	export JAVA_HOME=/usr/lib/jvm/java-6-sun
+	export PATH=$JAVA_HOME/bin:$PATH
+3. install inputmethod
+	sudo apt-get install ibus-table-wubi ibus-sunpinyin
+	#download vissible-ibus.tar.gz
+	wget http://www.xiit.cn/wp-content/uploads/2011/03/vissible-ibus.tar.gz
+	sudo cp vissible.db /usr/share/ibus-table/tables
+	sudo cp vissible.gif /usr/share/ibus-table/icons
+	(using Alt+Shift to switch pinyin to wubi)
+4. install vim-gtk
+	sudo apt-get install vim-gtk # support for "+p OR "*p
+5. install openssh-server
+	sudo apt-get install openssh-server
+6. install virtualbox
+	dowload: https://www.virtualbox.org/wiki/Downloads
+	>>>1. Host(right-Ctrl)+D: install addtions
+	>>>2. share setting: Host--Ubuntu, Client--xp
+		>>>open vbox Manager -->select a client -->Settings -->Shared Folds
+		>>>in xp, "My Computer", r-click, "reflect network..", driver: z, folder: \\vboxsvr\xxx
+	>>>3. share setting: Client--Ubuntu:
+		>>>sudo mount -t vboxsf gongxiang /mnt/shared
+		>>>OR in /etc/fstab: gongxiang /mnt/shared vboxsf rw,gid=username,uid=username,auto 0 0
+	>>>4. Access USB: sudo addgroup user vboxusers
+	>>>5. transition format, e.g.: VBoxManage clonehd source.vmdk target.vdi --format VDI
+7. install others
+	#pdf and chm
+	sudo apt-get install chmsee
+	#download Adobe reader: http://get.adobe.com/reader/
+	#install firefox(en_US): http://www.mozilla.org/en-US/firefox/all.html
+	sudo apt-get remove firefox
+	sudo tar jxvf firefox_tarball -C /usr/lib
+	sudo ln /usr/lib/firefox/firefox -s /usr/bin/firefox
+	#change firefox Icon: /usr/lib/firefox/icons
+	#download libflashplayer.so(11.2) $ sudo mv libflashplayer.so /usr/lib/mozilla/plugins
+	#install terminator
+	sudo add-apt-repository ppa:gnome-terminator/ppa
+	sudo apt-get install terminator
+	#install stardict
+	sudo apt-get install -y stardict
+	> download directory: http://abloz.com/huzheng/stardict-dic/zh_CN/
+	$ sudo mkdir -p /usr/share/stardict/dic && sudo tar xjvf stardict*.tar.bz2 -C /usr/share/stardict/dic
+	> sound: wget http://stardict-3.googlecode.com/files/WyabdcRealPeopleTTS.tar.bz2
+	$ sudo tar jxvf Wyabdc*.tar.jbz -C /usr/share
+	> setup: preferences->dictionary->sound: play ==> aplay
+8. make USBlive
+	>>>make WinOS:
+	sudo add-apt-repository ppa:colingille/freshlight
+	sudo apt-get update
+	sudo apt-get install winusb
+	   >>>install on the whole device: sudo winusb --format <iso path> <device>
+	   >>>install on the device partition: sudo winusb [--install] <iso path> <partition>
+	>>>make Ubuntu OS:
+	   >>> fdisk and mkfs.vfat -F32 -n ubuntu_live
+	   >>> sudo grub-install --root-directory=/path/mountpoint device_point
+	   >>> substitude boot/grub/grub.cfg
+
+--------------------------------------------------------------------------------
+Target: Android Develop Env, Ubuntu10.04
+>>Tips: linux should be 64-bits from android2.1!!!?
+Refs: http://source.android.com/source/initializing.html
+1. android initializing environment
+	sudo apt-get install git-core gnupg flex bison gperf build-essential \
+	zip curl zlib1g-dev libc6-dev lib32ncurses5-dev ia32-libs \
+	x11proto-core-dev libx11-dev lib32readline5-dev lib32z-dev \
+	libgl1-mesa-dev g++-multilib mingw32 tofrodos python-markdown \
+ 	libxml2-utils xsltproc dkms linux-headers-$(uname -r)
+2. install eclipse
+	http://www.eclipse.org/downloads/?osType=linux
+	download Eclipse Classic 3.7.2 linux 64-bits //Classic version
+3. eclipse config for android develop
+
+--------------------------------------------------------------------------------
+Target: Android6.0, install openjdk-7.0
+
+--------------------------------------------------------------------------------
+
+FAQ: About VirtualBox
+
+1. Q: ./VBoxLinuxAddtions.run on ubuntu client failed:
+      The headers for the current running kernel were not found.
+   A: sudo apt-get install dkms build-essential linux-headers-$(uname -r)
+      (VBoxLinuxAddtions.run support folder share, copy share, and so on)
+
+2. NO interface startup:
+   C:\Program Files\Oracle\VirtualBox\VBoxManage.exe startvm "ubuntu1604" -type headless
+
+3. Resize client HardDisk:
+   VBoxmanage.exe modifymedium disk 'filename' --resize <megabytes>
+
+4. Network on www, and communication with host:
+   Add two ethernet-card, for host-only mode and NAT mode
+
+5. Host-only driver on windows is removed:
+   Uninstall and reinstall virtualbox. No effect if just repaire.
+
+--------------------------------------------------------------------------------
+
+

@@ -1,0 +1,117 @@
+!man x; man xterm: check class resource
+! name.Class.resource: value[int|bool|string]
+!!!!!!!!!!!!!!!!!!!!!!!
+!!! RELOAD            !
+!!! xrdb ~/.Xresources!
+!!!!!!!!!!!!!!!!!!!!!!!
+
+! Preferences
+! xterm-256color ?: bad for yellow
+xterm*termName: xterm-color
+! WxH+x+y
+!xterm*vt100.geometry: 110x51+0+0
+xterm*geometry: 132x51+0+0
+!xterm*c132: true
+xterm.borderLess: true
+! Legacy: Remove black border
+!xterm*borderWidth: 0
+xterm*internalborder: 0
+! xterm.cursorBlink: false
+xterm.toolBar: false
+! line spacing, row pitch: 0.9~1.5
+xterm*scaleHeight: 1.01
+
+xterm*iconName: xterm
+xterm*iconBorderColor: blue
+xterm*iconBorderWidth: 2
+xterm*iconFont: -wenquanyi-wenquanyi bitmap song-medium-r-normal--16-160-75-75-p-80-iso10646-1
+
+! correct for Alt key
+xterm*metaSendsEscape: true
+! Scrolling
+xterm*saveLines: 100000
+xterm*scrollBar: false
+xterm*rightScrollBar: false
+xterm*jumpScroll: true
+xterm*scrollKey: false
+xterm*scrollTtyOutput: true
+xscreensaver.Dialog.headingFont: -*-fixed-bold-r-*-*-*-100-*-*-*-*-iso8859-1
+!xterm*autoWrap: true
+xterm*curses: true
+
+!Translations
+XTerm*VT100.Translations: #override \
+	Shift Ctrl <KeyPress> V: insert-selection(CLIPBOARD,PRIMARY,CUT_BUFFER0) \n\
+	<BtnUp>: select-end(CLIPBOARD,PRIMARY,CUT_BUFFER0) \n\
+	Shift Ctrl <KeyPress> P: print-everything(noAttrs) \n
+! print color and bold/underline attributes
+xterm*printAttributes: 2
+xterm*printerCommand: cat > ~/tmp/xtermdump
+xterm*on2Clicks: word
+xterm*on3Clicks: line
+xterm*on4Clicks: none
+! define double-click selected words
+xterm*charClass: 33:48,35:48,37:48,43:48,45-47:48,64:48,95:48,126:48
+xterm*cutNewline: false
+xterm*eightBitInput: false
+
+! Xterm*local: true
+! CJK Fonts
+xterm*locale: zh_CN.UTF-8
+! fc-list: search font family
+!xterm*faceName: Courier New:style=Regular,Normal,Standard:antialias=false:size=12
+xterm*faceName: DejaVu Sans Mono:style=Book,Standard:antialias=true:size=12
+xterm*faceNameDoublesize: WenQuanYi Micro Hei Mono:style=Regular:antialias=false:size=12
+xterm*utf8: true
+xterm*utf8Title: true
+! xterm.title:
+xterm*font: DejaVu Sans Mono:style=Book,Standard:antialias=true:size=12
+xterm*cjkWidth: true
+!xterm*mkWidth: true
+Xterm*XimFont: -wenquanyi-wenquanyi bitmap song-medium-r-normal--16-160-75-75-p-80-iso10646-1
+xterm*faceSize:  12
+xterm*faceSize1: 12
+xterm*faceSize2: 12
+xterm*faceSize3: 12
+xterm*faceSize4: 12
+xterm*faceSize5: 12
+xterm*faceSize6: 12
+
+! Color setting
+! for escape char-sequence
+xterm*dynamicColors: true
+!xterm*colorAttrMode: false
+xterm*colorBDMode: true
+Xterm*colorBD: yellow
+Xterm*colorULMode: true
+Xterm*colorUL: white
+!xterm*foreground: rgb:FF/FF/FF
+xterm*foreground: rgb:E0/E0/E0
+xterm*background: rgb:2E/34/36
+! http://www.xcolors.net [tango]
+!xterm*color0:  #000000
+xterm*color0:  #3D3D3D
+xterm*color1:  #CC0000
+xterm*color2:  #4E9A06
+xterm*color3:  #C4A000
+xterm*color4:  #3465A4
+xterm*color5:  #75507B
+!xterm*color6:  #0B939B
+xterm*color6:  #06989A
+xterm*color7:  #D3D7CF
+xterm*color8:  #555753
+xterm*color9:  #EF2929
+xterm*color10: #8AE234
+xterm*color11: #FCE94F
+!xterm*color11: #E0E000
+xterm*color12: #729FCF
+xterm*color13: #AD7FA8
+!xterm*color14: #00F5E9
+xterm*color14: #34E2E2
+xterm*color15: #EEEEEC
+
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+! emacs.foreground: rgb:FF/FF/FF
+! emacs.background: rgb:2E/34/36
+Emacs.useXIM: false
+

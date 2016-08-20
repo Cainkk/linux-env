@@ -1,0 +1,90 @@
+***Only for lxr-0.11.1***
+
+=========================
+Summary for (A/ Required tools) part
+1.   $ sudo apt-get install -y exuberant-ctags mysql-client mysql-server mysql-common \
+        libfile-mmagic-perl apache2 libapache2-mod-perl2-dev libdbi-perl libdbd-mysql-perl
+2.   http://webglimpse.net/download.php
+3.   http://sourceforge.net/projects/lxr/
+
+If any problem refs to A/ part
+=========================
+
+
+A/ Required tools
+-----------------
+1. lxr
+    http://lxr.sourceforge.net
+
+2. exuberant ctags
+    http://sf.net/projects/ctags
+
+3. database: here for MySQL, and DBI, DBD
+    $ sudo apt-get install mysql-client-5.5 mysql-server-5.5 #already include DBI DBD, if not: sudo cpan -i Bundle::DBI DBI DBD::mysql
+    $ sudo apt-get install libfile-mmagic-perl #OR: sudo cpan -i File::MMagic
+
+4. webserver: Apache httpd, mod_perl
+    $ sudo apt-get install -y apache2 libapache2-mod-perl2-dev
+
+5. freetext searching: Glimpse
+    http://webglimpse.net/download.php
+    $ ./configure && make && sudo make install
+ 
+
+B/ Config LXR
+-------------
+1. config LXR installation directory
+    $ cp -r path/to/lxr-x.x.x ~/lxr
+    $ ./genxref --checkonly
+    $ mkdir -p lxrconf.d
+    $ ./scripts/initial-config.sh
+    $ cp lxrconf.d/lxr.conf .
+
+2. database create and config: here for MySQL
+    $ mysql -uroot -p
+    $ Enter password: request root's passwd in MySQL (sudo cat /etc/mysql/debian.cnf)
+    mysql> create user 'lxr'@'localhost' identified by 'lxr';
+    mysql> exit
+    $  ./scripts/initdb-config.sh
+    $ mysql -u root -p < lxrconf.d/initdb-mysql-custom.sql # request root's passwd in MySQL
+
+3. config lxr.conf
+    $ vi lxr.conf
+    >>> change sourceroot
+    >>> change ignoredirs
+    >>> change range
+    uncomment dbuser
+    uncomment dbpass
+    uncomment dbprefix
+    >>> change glimpsedir
+
+
+C/ Setup Webserver(Apache httpd)
+--------------------------------
+1. sudo cp lxrconf.d/apache-lxrserver.conf /etc/apache2/conf.d
+2. sudo echo "ServerName localhost" >> /etc/apache2/httpd.conf
+
+
+D/ Genarate index
+-----------------
+1. ./genxref --url=http://localhost/lxr --version=versionA
+
+
+F/ Access Source Code
+---------------------
+1. open web explorer, type: http://localhost/lxr/versionA
+
+
+FAQ
+===
+1. forget MySQL password?!
+    $ sudo service mysql stop
+    $ sudo /usr/bin/mysqld_safe --skip-grant-tables &
+    $ Enter
+    $ mysql -uroot -p
+    $ Enter password: request root's passwd on host PC
+    mysql> update mysql.user set password=password(' ') where user="root";
+    mysql> flush privileges;
+    mysql> exit
+    $ sudo service mysql restart
+

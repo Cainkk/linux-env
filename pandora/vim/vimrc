@@ -1,0 +1,142 @@
+se nocp nu ru sc  is hls  ai si cin scs "basic setup
+se hlg=en,cn
+se mouse=h "copy: <S-LClick>
+runtime! ftplugin/man.vim
+filetype on
+syntax on
+"only backup origion if no git
+cm bak se bdir+=. pm=.org
+"backup every time with bex(backupext) option
+"au BufWritePre * let &bex = '-' . strftime("%Y%b%d%X") . '~'
+
+"TODO: optimize diff mode
+"hi Directory  cterm=bold ctermfg=Cyan guifg=White
+"hi DiffAdd    ctermbg=DarkCyan guibg=DarkCyan
+"hi DiffDelete ctermbg=DarkCyan guibg=DarkCyan
+"hi DiffChange ctermbg=DarkCyan guibg=DarkCyan
+"hi DiffText   ctermfg=Red ctermbg=DarkCyan guifg=Red guibg=DarkCyan
+
+se cul 
+hi cursorline cterm=none ctermbg=0
+""(DEFINE statusline)"""""""""""""""""""""""""""""
+hi StatusLine cterm=bold ctermfg=yellow ctermbg=blue
+function! CurDir()
+  let curdir = substitute(getcwd(), $HOME, "~", "g")
+  return curdir
+endfunction
+"TODO: How to split too long line
+se ls=2 stl=[%n][%{&ff}]\ %f%y%m%r%h\ \|PWD:\ %{CurDir()}\ \|%=\|%l,%c\ %p%%\ \|ascii=%b,hex=%B\ \|%{&fenc}
+""(DEFINE tabline)""""""""""""""""""""""""""""""""
+hi TabLineSel  term=bold cterm=bold ctermfg=Black ctermbg=DarkMagenta
+hi TabLine     term=bold cterm=bold ctermfg=Black ctermbg=White
+hi TabLineFill term=bold cterm=bold ctermfg=Red   ctermbg=White
+if has('gui')
+  set guioptions-=e
+endif
+if exists("+showtabline")
+  function! MyTabLine()
+    let s = ''
+    let t = tabpagenr()
+    let i = 1
+    while i <= tabpagenr('$')
+      let buflist = tabpagebuflist(i)
+      let winnr = tabpagewinnr(i)
+      let s .= '%' . i . 'T' . (i == t ? '%#TabLineSel#' : '%#TabLine#') . ' ' . '[' . i . ':'
+      let s .= winnr . '/' . tabpagewinnr(i,'$') . ']'
+      let s .= '%*' . (i == t ? '%#TabLineSel#' : '%#TabLine#')
+      let bufnr = buflist[winnr - 1]
+      let file = bufname(bufnr)
+      let buftype = getbufvar(bufnr, 'buftype')
+      if buftype == 'nofile'
+        if file =~ '\/.'
+          let file = substitute(file, '.*\/\ze.', '', '')
+        endif
+      else
+        let file = fnamemodify(file, ':p:t')
+      endif
+      if file == ''
+        let file = 'No Name'
+      endif
+      let s .= file
+      let i = i + 1
+    endwhile
+    let s .= '%T%#TabLineFill#%=' . (tabpagenr('$') > 1 ? '%999XX' : 'X')
+    return s
+  endfunction
+  set stal=1 tabline=%!MyTabLine()
+endif
+
+""(DEFINE MAPPING)""""""""""""""""""""""""""""""""
+"never set sts (sts: split line into TABs)
+map <silent> <F12> :se et ts=4 sw=4<CR>
+map <silent> <S-F12> :se list lcs=tab:>-,trail:-<CR>
+map <silent> <C-F12> :se nolist<CR>
+
+""(DEFINE VIM/PLUGIN)"""""""""""""""""""""""""""""
+"DO NOT USE winmanager plugin
+"NERDTree Configuration
+let NERDTreeWinPos = 'left'
+let NERDTreeWinSize = 25
+
+"Tlist Configuration
+let Tlist_Use_Right_Window = 1 "left
+let Tlist_WinWidth = 25
+
+"vi -S tagbar.vmb +q
+"Tagbar Configuration
+let g:tagbar_left = 1
+let g:tagbar_width = 25
+
+"Choose taglist OR tagbar plugin
+function s:MyTagOrTreeOpen()
+  let l:TreeOpened = exists("t:NERDTreeBufName") && bufwinnr(t:NERDTreeBufName) != -1
+
+  if 0 "Tagbar bug when open file read-only
+    let l:TagbarOpened = bufwinnr("__Tagbar__") != -1
+    if !l:TagbarOpened && !l:TreeOpened
+      silent! NERDTreeClose
+      silent! TagbarOpen fj
+    elseif !l:TreeOpened
+      silent! TagbarClose
+      silent! NERDTreeToggle
+    else
+      silent! NERDTreeClose
+    endif
+
+  else
+    let l:TlistOpened = bufwinnr(g:TagList_title) != -1
+    if !l:TlistOpened && !l:TreeOpened
+      silent! NERDTreeClose
+      silent! TlistOpen
+    elseif !l:TreeOpened
+      silent! TlistClose
+      silent! NERDTreeToggle
+    else
+      silent! NERDTreeClose
+    endif
+
+  endif
+endfunction
+
+let s:old_cpo = &cpo
+set cpo&vim
+nmap <silent> <F3> :call <SID>MyTagOrTreeOpen()<CR>
+let &cpo = s:old_cpo
+au! QuickFixCmdPre vimgrep silent! copen 15
+
+""(DEFINE COMMAND)""""""""""""""""""""""""""""""""
+"Tab setting
+com! -nargs=0 Tab2 se et ts=2 sw=2
+com! -nargs=0 Tab3 se et ts=3 sw=3
+com! -nargs=0 Tab4 se et ts=4 sw=4
+com! -nargs=0 Tab8 se et ts=8 sw=8
+"Change READ-ONLY to writeable
+com! -nargs=0 W setl write ma
+com! -nargs=0 Wa set write ma "All buffers writeable
+"Splite new window on right
+com! -nargs=? -complete=file Rs bel vs <args>
+com! -nargs=? -complete=file Bs bel s <args>
+"Show non-printable format
+com! -nargs=0 List se list lcs=tab:>-,trail:-
+""""""""""""""""""""""""""""""""""""""""""""""""""
+

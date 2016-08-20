@@ -1,0 +1,70 @@
+#Anywhere
+#export PS1='\[\e[0m\]\[\e[1;33m\]\u\[\e[1;34m\]@\[\e[1;33m\]\h\[\e[0;32m\][\A]\[\e[0m\]:\w\$ '
+#Ubuntu
+export PS1='\[\e]0;\u@\h: \w\a\]${debian_chroot:+($debian_chroot)}\[\e[1;33m\]\u@\h\[\e[0;32m\][\A]\[\e[0m\]:\w\$ '
+
+alias cd-="cd -"
+alias cd..="cd ../"
+alias cd1="cd ../"
+alias cd2="cd ../../"
+alias cd3="cd ../../../"
+alias cd4="cd ../../../../"
+alias cd5="cd ../../../../../"
+alias cd6="cd ../../../../../../"
+alias cd7="cd ../../../../../../../"
+alias cd8="cd ../../../../../../../../"
+alias cd9="cd ../../../../../../../../../"
+alias view="vi -MNn"
+alias r="fc -s"
+function mkcd(){ mkdir -p "$@" && eval cd "\"\$$#\"";}
+function ..(){ cd `eval printf ../%.s {1..$1}`;}
+
+#FIFO, so reverse DIRSTACK
+function cs() {
+    [ -z $1 ] && { dirs -v |sed '1d' && return;}
+
+    local i l s
+    pushd -n `readlink -e $1` 2&>/dev/null;
+    for ((i=1,l=$((${#DIRSTACK[@]}-1));i<l;i++))
+    do
+        s=${DIRSTACK[$i]}; DIRSTACK[$i]=${DIRSTACK[$((i+1))]}; DIRSTACK[$((i+1))]=$s;
+    done
+    dirs -v |sed '1d'
+}
+
+alias cur='cs .' #really cute
+alias cs1="cd ~1"
+alias cs2="cd ~2"
+alias cs3="cd ~3"
+alias cs4="cd ~4"
+alias cs5="cd ~5"
+alias cs6="cd ~6"
+alias cs7="cd ~7"
+alias cs8="cd ~8"
+alias cs9="cd ~9"
+alias p1="popd +1 >/dev/null;dirs -v|sed '1d'"
+alias p2="popd +2 >/dev/null;dirs -v|sed '1d'"
+alias p3="popd +3 >/dev/null;dirs -v|sed '1d'"
+alias p4="popd +4 >/dev/null;dirs -v|sed '1d'"
+alias p5="popd +5 >/dev/null;dirs -v|sed '1d'"
+alias p6="popd +6 >/dev/null;dirs -v|sed '1d'"
+alias p7="popd +7 >/dev/null;dirs -v|sed '1d'"
+alias p8="popd +8 >/dev/null;dirs -v|sed '1d'"
+alias p9="popd +9 >/dev/null;dirs -v|sed '1d'"
+
+#UTILITY
+#w3m -dump -T text/html input.html > output.txt
+#Emacs############################################
+alias e='emacsclient -t -a='
+alias ekill='kill `ps -Cemacs opid=,cmd= | sed -n '\''/\([0-9]\+\) emacs --daemon/{s//\1/p;q}'\''`'
+#for ls color in tilda terminal
+#[[ X`ps ocmd= $$` == "Xtilda" ]] && export LS_COLORS="$LS_COLORS:di=01;36"
+
+#JAVA: Maybe not need anymore#####################
+#export JAVA_HOME=/usr/lib/jvm/java-6-sun
+#export CLASSPATH=/usr/lib/jvm/java-6-sun/lib
+
+##################################################
+#LOCAL WORKSPACE##################LOCAL WORKSPACE#
+##################################################
+
