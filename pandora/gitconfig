@@ -1,0 +1,40 @@
+[user]
+	name = cdun
+	email = cdun@cisco.com
+[alias]
+	b = branch
+	s = status
+	co = checkout
+	ci = commit
+	de = describe
+	ca = commit --amend
+	cc = commit --amend -c
+	ce = commit --amend -c
+	ch = commit --amend -CHEAD
+	cu = commit --amend -C
+[core]
+	editor = vi
+
+##################################################
+#GIT TIPS BUILD-UP################################
+#.gitignore setup#################################
+#WILL ADD REPO TIPS BUILD-UP######################
+##################################################
+#git co -t remote-branch #track and the same name
+#git b -vv #check more details
+#git show -v SHA-exp
+
+#git reset
+#change commit-history interactively, powerfully
+#git rebase -i
+#git pull = git fetch + git merge
+
+#git revert
+#git blame
+#git log -L #check history in details
+
+#git remote show
+#git push #check manual in details
+#git push --no-thin # avoid crap tree error
+
+#git merge-base #check ancestor

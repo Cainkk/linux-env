@@ -24,7 +24,7 @@ function cs() {
     [ -z $1 ] && { dirs -v |sed '1d' && return;}
 
     local i l s
-    pushd -n `readlink -e $1` 2&>/dev/null;
+    pushd -n `readlink -e $1` &>/dev/null;
     for ((i=1,l=$((${#DIRSTACK[@]}-1));i<l;i++))
     do
         s=${DIRSTACK[$i]}; DIRSTACK[$i]=${DIRSTACK[$((i+1))]}; DIRSTACK[$((i+1))]=$s;
