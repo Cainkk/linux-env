@@ -31,11 +31,26 @@ XTERM_DONE_FLAG=
 TMUX_DONE_FLAG=
 
 #Colorful Message
-INFO=$'\e''[1;31;43m' #fg: red, bg: yellow
-WARN=$'\e''[1;37;41m' #fg: white, bg: red
-EEND=$'\e''[0m'
+ERROR=$'\e[1;31;47mError: ' #fg: red, bg: white
+WARN=$'\e[1;33mWarning: '   #fg: yellow
+INFO=$'\e[1;32mInfo: '      #fg: green
+MONO=$'\e[0m'
+EEND=$'\e[0m'
 
-#Treasure Place You Will See...
+die() { [ "$1" ] && echo -e '\n\t'${ERROR}$*$MONO; exit 1;}
+#What happens if yelling at girl;)
+yellat() { (($?)) || return 0 && die $*;}
+
+pr_err() { [ "$1" ] && echo -e '\n\t'${ERROR}$*$MONO;}
+
+pr_warn() { [ "$1" ] && echo -e '\n\t'${WARN}$*$MONO;}
+
+pr_info() { [ "$1" ] && echo -e '\n\t'${INFO}$*$MONO;}
+
+##################################################
+# Beginning...
+##################################################
+#Pandora: Treasure-trove You Will See...
 PANDORAROOT="$(dirname `readlink -ef $0`)"
 
 ##################################################
@@ -43,22 +58,23 @@ PANDORAROOT="$(dirname `readlink -ef $0`)"
 # Append Customization                           #
 # Backup surfix: .save                           #
 ##################################################
+PANDORA_BASHRC=${PANDORAROOT}/bashrc
 BASHRC=$HOME/.bashrc
 BASHRC_SAVE=${BASHRC}.save
 
 #Backup old .save file
-if [ -e "${BASHRC_SAVE}" ]; then
-    mv "${BASHRC_SAVE}"{,.`date +%Y-%m-%d-%H-%M-%S`}
-fi
+[ -e "${BASHRC_SAVE}" ] && mv "${BASHRC_SAVE}"{,.`date +%Y-%m-%d-%H-%M-%S`}
 
 #Backup target file
 [ -e "${BASHRC}" ] && cp ${BASHRC} ${BASHRC_SAVE}
 
 #DO what needs to be done
-cat >> "${BASHRC}" < ${PANDORAROOT}/bashrc && {
+if cat >> "${BASHRC}" < ${PANDORA_BASHRC}; then
     BASH_DONE_FLAG=0
-    echo -e '\n\t'${INFO}Bash Configuration DONE...$EEND
-} || echo -e '\n\t'${WARN}NEED Check BASHRC'!!!'$EEND
+    pr_info "Bash Configuration DONE"
+else
+    pr_warn "NEED Check BASHRC"
+fi
 
 ##################################################
 # VIM CONFIGURATION                              #
@@ -66,28 +82,35 @@ cat >> "${BASHRC}" < ${PANDORAROOT}/bashrc && {
 # Append VIM directory customization             #
 # VIM Plugin file Bakcup surfix: .old            #
 ##################################################
+PANDORA_VIM=${PANDORAROOT}/vim
+PANDORA_VIMRC=${PANDORA_VIM}/vimrc
 VIMRC=$HOME/.vimrc
 VIMRC_SAVE=${VIMRC}.save
 VIMDIR=$HOME/.vim
 
 #Backup old .save file
-if [ -e "${VIMRC_SAVE}" ]; then
-    mv "${VIMRC_SAVE}"{,.`date +%Y-%m-%d-%H-%M-%S`}
-fi
+[ -e "${VIMRC_SAVE}" ] && mv "${VIMRC_SAVE}"{,.`date +%Y-%m-%d-%H-%M-%S`}
 
 #Backup target file
 [ -e "${VIMRC}" ] && cp ${VIMRC} ${VIMRC_SAVE}
 
 #DO what needs to be done
-cp ${PANDORAROOT}/vim/vimrc ${VIMRC} && {
-    #copy .vimrc there too for comparison
-    mkdir -p ${VIMDIR} && \
-    cp --parents --backup=old ${PANDORAROOT}/vim ${VIMDIR}
-    [ $? -eq 0 ] && {
+if cp ${PANDORA_VIMRC} ${VIMRC}; then
+    if mkdir -p ${VIMDIR}; then
+        #copy .vimrc there too for comparison
+        cp --parents --backup=old ${PANDORA_VIM} ${VIMDIR}
+    fi
+
+    if [ $? -eq 0 ]; then
         VIM_DONE_FLAG=0
-        echo -e '\n\t'${INFO}VIM Configuration DONE...$EEND
-    } || echo -e '\n\t'${INFO}Check VIM configuration'!!!'$EEND
-} || echo -e '\n\t'${INFO}Check VIM configuration'!!!'$EEND
+        pr_info "VIM Configuration DONE..."
+    else
+        pr_warn "Check VIM configuration"
+    fi
+else
+    pr_warn "Check VIM configuration"
+fi
+
 
 ##################################################
 # $HOME/bin/ CONFIGURATION                       #
@@ -102,48 +125,62 @@ cp ${PANDORAROOT}/vim/vimrc ${VIMRC} && {
 # 4: GNU Global is OK                            #
 # 100: NOTHING IS GOOD                           #
 ##################################################
+PANDORA_CW=${PANDORAROOT}/cw
 HOMEBIN=$HOME/bin
 
 mkdir -p ${HOMEBIN}
-cp ${PANDORAROOT}/cw ${HOMEBIN} && { # die if no cw
 
+if cp ${PANDORA_CW} ${HOMEBIN}; then
     HOMEBIN_DONE_FLAG=1
-
+    #Tips: expr seems like sed, only 6 special RE character
     #Check cscope version
-    #Tips: expr regex seems like sed, only 6 special character
-    which cscope >/dev/null && { # cscope already installed
-        [[ "$(cscope -V 2>&1)" =~ [^0-9]*([0-9]+).([0-9]+) ]] && {
-            MAJOR=${BASH_REMATCH[1]}
-            MINOR=${BASH_REMATCH[2]}
-            let ${MAJOR}>=15 && let ${MINOR}>=8 && {
+    if which cscope >/dev/null; then # cscope already installed
+        if [[ "$(cscope -V 2>&1)" =~ [^0-9]*([0-9]+).([0-9]+) ]]; then
+            MAJOR=${BASH_REMATCH[1]}; MINOR=${BASH_REMATCH[2]}
+            if let ${MAJOR}>=15 && let ${MINOR}>=8; then
                 HOMEBIN_DONE_FLAG=2
-                echo -e '\n\t'${INFO}NEW: `cscope -V 2>&1` '>= 15.8'$EEND
-            } || echo -e '\n\t'${WARN}Check cscope'!!!'$EEND
-        } || echo -e '\n\t'${WARN}Check cscope'!!!'$EEND
-    } || echo -e '\n\t'${WARN}NO cscope'!!!'$EEND
+                pr_info "NEW: `cscope -V 2>&1` '>= 15.8'"
+            else 
+                pr_warn "Check cscope"
+            fi
+        else
+            pr_warn "Check cscope"
+        fi
+    else
+        pr_warn "NO cscope"
+    fi
 
     #Check ctags version
-    which ctags >/dev/null && { # ctags already installed
-        [[ "$(ctags --version 2>&1)" =~ ^'Exuberant Ctags'.*[0-9]+\.[0-9]+ ]] && {
+    if which ctags >/dev/null; then # ctags already installed
+        if [[ "$(ctags --version 2>&1)" =~ ^'Exuberant Ctags'.*[0-9]+\.[0-9]+ ]]; then
             HOMEBIN_DONE_FLAG=3
-            echo -e '\n\t'${INFO}${BASH_REMATCH[0]}...$EEND
-        } || echo -e '\n\t'${WARN}Not Exuberant-ctags version'!!!'$EEND
-    } || echo -e '\n\t'${WARN}No Exuberant-ctags'!!!'$EEND
+            pr_info "${BASH_REMATCH[0]}..."
+        else
+            pr_warn "Not Exuberant-ctags version"
+        fi
+    else
+            pr_warn "No Exuberant-ctags"
+    fi
 
-    #Check Global, new tool to try
-    which gtags >/dev/null && {
+    
+    if which gtags >/dev/null; then #Check Global, new tool to try
         HOMEBIN_DONE_FLAG=4
-        echo -e '\n\t'${INFO}"$(global --version | sed -ne '1d')..."$EEND
-    } || echo -e '\n\t'${WARN}"No GNU Global"$EEND
+        pr_info "$(global --version | sed -ne '1d')..."
+    else
+        pr_warn "No GNU Global"
+    fi
 
-} || HOMEBIN_DONE_FLAG=100
-
-if let ${HOMEBIN_DONE_FLAG} == 0; then
-    echo -e '\n\t'${INFO}HOMEBIN DONE...$EEND
-elif let ${HOMEBIN_DONE_FLAG} == 100; then
-    echo -e '\n\t'${WARN}HOMEBIN Empty'!!!'$EEND
 else
-    echo -e '\n\t'${WARN}NEED Check HOMEBIN'!!!'$EEND
+    HOMEBIN_DONE_FLAG=100
+fi
+
+
+if ((${HOMEBIN_DONE_FLAG}==0)); then
+    pr_info "HOMEBIN DONE..."
+elif ((${HOMEBIN_DONE_FLAG}==100)); then
+    pr_warn "HOMEBIN Empty"
+else
+    pr_warn "NEED Check HOMEBIN"
 fi
 
 
@@ -151,6 +188,7 @@ fi
 # XTERM CONFIGURATION                            #
 # Setup in Xresources                            #
 ##################################################
+PANDORA_XRESOURCES=${PANDORAROOT}/Xresources
 XRESOURCES=$HOME/.Xresources
 XRESOURCES_SAVE=${XRESOURCES}.save
 
@@ -164,58 +202,56 @@ fi
 
 
 #DO what needs to be done
-if cp ${PANDORAROOT}/Xresources ${XRESOURCES}; then
-    echo -e '\n\t'${INFO}Xresources DONE...$EEND
+if cp ${PANDORA_XRESOURCES} ${XRESOURCES}; then
+    pr_info "Xresources DONE..."
 else
-    echo -e '\n\t'${WARN}NEED Check Xresources'!!!'$EEND
+    pr_warn "NEED Check Xresources"
 fi
 
 ##################################################
 #         TMUX CONFIGURATION                     #
 ##################################################
-TMUX=$HOME/.tmux.conf
-TMUX_SAVE=${TMUX}.save
+PANDORA_TMUXCONF=${PANDORAROOT}/tmux.conf
+TMUXCONF=$HOME/.tmux.conf
+TMUXCONF_SAVE=${TMUX}.save
 
 #Backup old .save file
-if [ -e "${TMUX_SAVE}" ]; then
-    mv "${TMUX_SAVE}"{,.`date +%Y-%m-%d-%H-%M-%S`}
-fi
-
+[ -e "${TMUXCONF_SAVE}" ] && mv "${TMUXCONF_SAVE}"{,.`date +%Y-%m-%d-%H-%M-%S`}
 
 #Backup target file
-[ -e "${TMUX}" ] && cp ${TMUX} ${TMUX_SAVE}
+[ -e "${TMUXCONF}" ] && cp ${TMUXCONF} ${TMUXCONF_SAVE}
 
 #DO what needs to be done
-if cp ${PANDORAROOT}/tmux.conf ${TMUX}; then
-    echo -e '\n\t'${INFO}TMUX DONE...$EEND
+if cp ${PANDORA_TMUXCONF} ${TMUXCONF}; then
+    pr_info "TMUXCONF DONE..."
 else
-    echo -e '\n\t'${WARN}NEED Check TMUX'!!!'$EEND
+    pr_warn "NEED Check TMUXCONF"
 fi
 
 ##################################################
 # GITCONFIG file CONFIGURATOIN                   #
 ##################################################
-GIT=$HOME/.gitconfig
-GIT_SAVE=${GIT}.save
+PANDORA_GITCONFIG=${PANDORAROOT}/gitconfig
+GITCONFIG=$HOME/.gitconfig
+GITCONFIG_SAVE=${GITCONFIG}.save
 
 #Backup old .save file
-if [ -e "${GIT_SAVE}" ]; then
-    mv "${GIT_SAVE}"{,.`date +%Y-%m-%d-%H-%M-%S`}
+if [ -e "${GITCONFIG_SAVE}" ]; then
+    mv "${GITCONFIG_SAVE}"{,.`date +%Y-%m-%d-%H-%M-%S`}
 fi
 
-
 #Backup target file
-[ -e "${GIT}" ] && cp ${GIT} ${GIT_SAVE}
+[ -e "${GITCONFIG}" ] && cp ${GITCONFIG} ${GITCONFIG_SAVE}
 
 #DO what needs to be done
-if cp ${PANDORAROOT}/gitconfig ${GIT}; then
-    echo -e '\n\t'${INFO}GITCONFIG DONE...$EEND
+if cp ${PANDORA_GITCONFIG} ${GITCONFIG}; then
+    pr_info "GITCONFIG DONE..."
 else
-    echo -e '\n\t'${WARN}NEED Check GITCONFIG'!!!'$EEND
+    pr_warn "NEED Check GITCONFIG"
 fi
 
 ##################################################
 #ALL COMPLETE, SAY ByeBye#########################
-echo -e '\n'${INFO}It's OVER...$EEND
+pr_info "It's OVER..."
 exit $?
 
