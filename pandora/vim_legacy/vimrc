@@ -1,66 +1,3 @@
-"Vundle {{{
-"NOTE: pre-install: [git, curl]
-"Plugins from *github*, *vim-scripts* or local place
-"
-"git clone https://github.com/VundleVim/Vundle.vim.git ~/.vim/bundle
-"
-":h vundle "More details
-":PluginList
-":PluginInstall[!] "OR : vim +PluginInstall +qall
-":PluginSearch foo
-":PluginClean
-se nocp
-filetype off
-
-set rtp+=~/.vim/bundle/Vundle.vim
-"ALL Plugins should be between begin and end
-"Plugin name: username/reponame
-call vundle#begin() "can change place
-  Plugin 'VundleVim/Vundle.vim' "Manage itself
-  Plugin 'scrooloose/nerdtree' "{
-    "DO-NOT USE winmanager
-    let NERDTreeWinPos = 'left'
-    let NERDTreeWinSize = 25
-  "}
-
-  Plugin 'vim-scripts/matchit.zip'
-  "Plugin 'vim-scripts/L9'
-
-  Plugin 'vim-scripts/taglist.vim' "{
-    "let Tlist_Use_Right_Window = 0 "default is left
-    "let Tlist_Ctags_Cmd = '/usr/local/bin/ctags'
-    let Tlist_WinWidth = 25
-    let Tlist_Exit_OnlyWindow = 1
-    let Tlist_Enable_Fold_Column = 0
-    let Tlist_Show_One_File = 1
-  "}
-
-  Plugin 'majutsushi/tagbar' "{
-    "vi -S tagbar.vmb +q
-    let g:tagbar_left = 1
-    let g:tagbar_width = 25
-  "}
-
-  "Plugin 'vim-scripts/cscope_macros.vim' "Fixme
-  Plugin 'SirVer/ultisnips'
-  Plugin 'Valloric/YouCompleteMe' "{
-    "PRE-CONDITION:
-    "sudo apt-get install -y libclang-dev build-essential cmake
-    "+ python-dev python3-dev
-    "Ignore libboost-dev
-    "
-    "semantic support for C-family languages:
-    "cd ~/.vim/bundle/YouCompleteMe
-    "./install.py --clang-completer --system-libclang
-    "support --all, but NEED more tools
-  "}
-call vundle#end()
-filetype plugin indent on
-"}}}
-
-""""""""""""""""""""""""""""""""""""""""""""""""""
-"COMMON"""""""""""""""""""""""""""""""""""""""""""
-""""""""""""""""""""""""""""""""""""""""""""""""""
 se nocp nu ru sc  is hls  ai si cin scs "basic setup
 se hlg=en,cn
 se mouse=h "copy: <S-LClick>
@@ -71,7 +8,6 @@ syntax on
 cm bak se bdir+=. pm=.org
 "backup every time with bex(backupext) option
 "au BufWritePre * let &bex = '-' . strftime("%Y%b%d%X") . '~'
-"se pt=\\p
 
 "TODO: optimize diff mode
 "hi Directory  cterm=bold ctermfg=Cyan guifg=White
@@ -136,12 +72,30 @@ map <silent> <F12> :se et ts=4 sw=4<CR>
 map <silent> <S-F12> :se list lcs=tab:>-,trail:-<CR>
 map <silent> <C-F12> :se nolist<CR>
 
-""(DEFINE VIM-plugin)"""""""""""""""""""""""""""""
+""(DEFINE VIM/PLUGIN)"""""""""""""""""""""""""""""
+"DO NOT USE winmanager plugin
+"NERDTree Configuration
+let NERDTreeWinPos = 'left'
+let NERDTreeWinSize = 25
+
+"Tlist Configuration
+"let Tlist_Use_Right_Window = 0 "default is left
+"let Tlist_Ctags_Cmd = '/usr/local/bin/ctags'
+let Tlist_WinWidth = 25
+let Tlist_Exit_OnlyWindow = 1
+let Tlist_Enable_Fold_Column = 0
+let Tlist_Show_One_File = 1
+
+"vi -S tagbar.vmb +q
+"Tagbar Configuration
+let g:tagbar_left = 1
+let g:tagbar_width = 25
+
 "Choose taglist OR tagbar plugin
 function s:MyTagOrTreeOpen()
   let l:TreeOpened = exists("t:NERDTreeBufName") && bufwinnr(t:NERDTreeBufName) != -1
 
-  if 0 "Tagbar bug when open file read-only 
+  if 0 "Tagbar bug when open file read-only
     let l:TagbarOpened = bufwinnr("__Tagbar__") != -1
     if !l:TagbarOpened && !l:TreeOpened
       silent! NERDTreeClose
@@ -188,12 +142,5 @@ com! -nargs=? -complete=file Rs bel vs <args>
 com! -nargs=? -complete=file Bs bel s <args>
 "Show non-printable format
 com! -nargs=0 List se list lcs=tab:>-,trail:-
-"dos2unix
-com! -nargs=0 Unix se ff=unix
 """"""""""""""""""""""""""""""""""""""""""""""""""
-""""""""""""""""""""""""""""""""""""""""""""""""""
-"Tips Here
-
-"Convert dos file to unix
-"se ff=unix
 

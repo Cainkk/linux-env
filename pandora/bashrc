@@ -35,6 +35,7 @@ function cs() {
 }
 
 alias cur='cs .' #really cute
+alias cs.='cs .'
 alias cs1="cd ~1"
 alias cs2="cd ~2"
 alias cs3="cd ~3"

@@ -23,23 +23,29 @@ cat <<'EOF'
 
 EOF
 
-#Things ToDo
-BASH_DONE_FLAG=
-VIM_DONE_FLAG=
-HOMEBIN_DONE_FLAHG=
-XTERM_DONE_FLAG=
-TMUX_DONE_FLAG=
+# Things to do
+# 0: done; 1: no; 2: check version
+TOOL_DONE=(
+    "bash"=0
+    "vim"=0
+    "cw"=0
+    "cscope"=0
+    "ctags"=0
+    "global"=0
+    "xterm"=0
+    "tmux"=0
+    "git"
+)
 
 #Colorful Message
 ERROR=$'\e[1;31;47mError: ' #fg: red, bg: white
 WARN=$'\e[1;33mWarning: '   #fg: yellow
 INFO=$'\e[1;32mInfo: '      #fg: green
 MONO=$'\e[0m'
-EEND=$'\e[0m'
 
 die() { [ "$1" ] && echo -e '\n\t'${ERROR}$*$MONO; exit 1;}
 #What happens if yelling at girl;)
-yellat() { (($?)) || return 0 && die $*;}
+yell() { (($?)) || return 0 && die $*;}
 
 pr_err() { [ "$1" ] && echo -e '\n\t'${ERROR}$*$MONO;}
 
@@ -52,6 +58,7 @@ pr_info() { [ "$1" ] && echo -e '\n\t'${INFO}$*$MONO;}
 ##################################################
 #Pandora: Treasure-trove You Will See...
 PANDORAROOT="$(dirname `readlink -ef $0`)"
+[ -d "$PANDORAROOT" ] || yell "Not found $PANDORAROOT"
 
 ##################################################
 # BASHRC CONFIGURATION                           #
@@ -70,45 +77,48 @@ BASHRC_SAVE=${BASHRC}.save
 
 #DO what needs to be done
 if cat >> "${BASHRC}" < ${PANDORA_BASHRC}; then
-    BASH_DONE_FLAG=0
+    TOOL_DONE["bash"]=0
     pr_info "Bash Configuration DONE"
 else
-    pr_warn "NEED Check BASHRC"
+    TOOL_DONE["bash"]=1
+    pr_err "NEED Check BASHRC"
 fi
 
 ##################################################
 # VIM CONFIGURATION                              #
 # Replace .vimrc to avoid conflict               #
-# Append VIM directory customization             #
+# VIM directory customization                    #
 # VIM Plugin file Bakcup surfix: .old            #
 ##################################################
 PANDORA_VIM=${PANDORAROOT}/vim
-PANDORA_VIMRC=${PANDORA_VIM}/vimrc
+PANDORA_VIM_LEGACY=${PANDORAROOT}/vim_legacy
 VIMRC=$HOME/.vimrc
 VIMRC_SAVE=${VIMRC}.save
 VIMDIR=$HOME/.vim
+VIMDIR_SAVE=$HOME/.vim_save
+VIMDIR_RC=${VIMDIR}/vimrc
 
 #Backup old .save file
 [ -e "${VIMRC_SAVE}" ] && mv "${VIMRC_SAVE}"{,.`date +%Y-%m-%d-%H-%M-%S`}
 
-#Backup target file
-[ -e "${VIMRC}" ] && cp ${VIMRC} ${VIMRC_SAVE}
+#Backup target files
+[ -e "$VIMRC" ] && mv ${VIMRC} ${VIMRC_SAVE}
+[ -d "$VIMDIR" ] && mv ${VIMDIR} ${VIMDIR_SAVE}
 
 #DO what needs to be done
-if cp ${PANDORA_VIMRC} ${VIMRC}; then
-    if mkdir -p ${VIMDIR}; then
-        #copy .vimrc there too for comparison
-        cp --parents --backup=old ${PANDORA_VIM} ${VIMDIR}
-    fi
-
-    if [ $? -eq 0 ]; then
-        VIM_DONE_FLAG=0
-        pr_info "VIM Configuration DONE..."
+if [[ "`vim --version | sed -n 1p`" =~ "Vi IMproved "([0-9]+).([0-9]+) ]]; then
+    if ((${BASH_REMATCH[1]}>=7 && ${BASH_REMATCH[2]}>=4)); then
+        mkdir -p ${VIMDIR}
+        cp -r --backup=old ${PANDORA_VIM}/* ${VIMDIR}
+        TOOL_DONE["vim"]=0
     else
-        pr_warn "Check VIM configuration"
+        cp -r --backup=old ${PANDORA_VIM_LEGACY}/* ${VIMDIR}
+        mv ${VIMDIR_RC} ${VIMRC}
+        TOOL_DONE["vim"]=2
     fi
 else
-    pr_warn "Check VIM configuration"
+    pr_err "No vim installed..."
+    TOOL_DONE["vim"]=1
 fi
 
 
@@ -127,62 +137,60 @@ fi
 ##################################################
 PANDORA_CW=${PANDORAROOT}/cw
 HOMEBIN=$HOME/bin
+HOMEBIN_CW=${HOMEBIN}/cw
 
 mkdir -p ${HOMEBIN}
 
-if cp ${PANDORA_CW} ${HOMEBIN}; then
-    HOMEBIN_DONE_FLAG=1
-    #Tips: expr seems like sed, only 6 special RE character
-    #Check cscope version
-    if which cscope >/dev/null; then # cscope already installed
-        if [[ "$(cscope -V 2>&1)" =~ [^0-9]*([0-9]+).([0-9]+) ]]; then
-            MAJOR=${BASH_REMATCH[1]}; MINOR=${BASH_REMATCH[2]}
-            if let ${MAJOR}>=15 && let ${MINOR}>=8; then
-                HOMEBIN_DONE_FLAG=2
-                pr_info "NEW: `cscope -V 2>&1` '>= 15.8'"
-            else 
-                pr_warn "Check cscope"
-            fi
-        else
-            pr_warn "Check cscope"
-        fi
-    else
-        pr_warn "NO cscope"
-    fi
-
-    #Check ctags version
-    if which ctags >/dev/null; then # ctags already installed
-        if [[ "$(ctags --version 2>&1)" =~ ^'Exuberant Ctags'.*[0-9]+\.[0-9]+ ]]; then
-            HOMEBIN_DONE_FLAG=3
-            pr_info "${BASH_REMATCH[0]}..."
-        else
-            pr_warn "Not Exuberant-ctags version"
-        fi
-    else
-            pr_warn "No Exuberant-ctags"
-    fi
-
-    
-    if which gtags >/dev/null; then #Check Global, new tool to try
-        HOMEBIN_DONE_FLAG=4
-        pr_info "$(global --version | sed -ne '1d')..."
-    else
-        pr_warn "No GNU Global"
-    fi
-
+if cp ${PANDORA_CW} ${HOMEBIN_CW}; then
+    chmod +x ${HOMEBIN_CW}
+    TOOL_DONE["cw"]=0
 else
-    HOMEBIN_DONE_FLAG=100
+    pr_err "Cannot create ${HOMEBIN_CW}"
+    TOOL_DONE["cw"]=1
 fi
 
-
-if ((${HOMEBIN_DONE_FLAG}==0)); then
-    pr_info "HOMEBIN DONE..."
-elif ((${HOMEBIN_DONE_FLAG}==100)); then
-    pr_warn "HOMEBIN Empty"
+#Check cscope
+if which cscope >/dev/null; then
+    if [[ "$(cscope -V 2>&1)" =~ [^0-9]*([0-9]+).([0-9]+) ]]; then
+        MAJOR=${BASH_REMATCH[1]}; MINOR=${BASH_REMATCH[2]}
+        if let ${MAJOR}>=15 && let ${MINOR}>=8; then
+            TOOL_DONE["cscope"]=0
+            pr_info "NEW: `cscope -V 2>&1` '>= 15.8'"
+        else 
+            TOOL_DONE["cscope"]=2
+            pr_warn "Check cscope version"
+        fi
+    else
+        TOOL_DONE["cscope"]=1
+        pr_warn "Check cscope failed..."
+    fi
 else
-    pr_warn "NEED Check HOMEBIN"
+    TOOL_DONE["cscope"]=1
+    pr_err "NO cscope, Need install manually..."
 fi
 
+#Check ctags
+if which ctags >/dev/null; then
+    if [[ "$(ctags --version 2>&1)" =~ ^'Exuberant Ctags'.*[0-9]+\.[0-9]+ ]]; then
+        TOOL_DONE["ctags"]=0
+        pr_info "${BASH_REMATCH[0]}..."
+    else
+        TOOL_DONE["ctags"]=2
+        pr_warn "Not Exuberant-ctags version..."
+    fi
+else
+        TOOL_DONE["ctags"]=1
+        pr_err "No Exuberant-ctags installed..."
+fi
+
+#Check global
+if which gtags >/dev/null; then
+    TOOL_DONE["global"]=0
+    pr_info "$(global --version | sed -ne '1d')..."
+else
+    TOOL_DONE["global"]=1
+    pr_warn "No GNU Global installed..."
+fi
 
 ##################################################
 # XTERM CONFIGURATION                            #
@@ -203,8 +211,10 @@ fi
 
 #DO what needs to be done
 if cp ${PANDORA_XRESOURCES} ${XRESOURCES}; then
+    TOOL_DONE["xterm"]=0
     pr_info "Xresources DONE..."
 else
+    TOOL_DONE["xterm"]=1
     pr_warn "NEED Check Xresources"
 fi
 
@@ -223,8 +233,10 @@ TMUXCONF_SAVE=${TMUX}.save
 
 #DO what needs to be done
 if cp ${PANDORA_TMUXCONF} ${TMUXCONF}; then
+    TOOL_DONE["tmux"]=0
     pr_info "TMUXCONF DONE..."
 else
+    TOOL_DONE["tmux"]=1
     pr_warn "NEED Check TMUXCONF"
 fi
 
@@ -245,13 +257,43 @@ fi
 
 #DO what needs to be done
 if cp ${PANDORA_GITCONFIG} ${GITCONFIG}; then
+    TOOL_DONE["git"]=0
     pr_info "GITCONFIG DONE..."
 else
+    TOOL_DONE["git"]=1
     pr_warn "NEED Check GITCONFIG"
 fi
 
 ##################################################
-#ALL COMPLETE, SAY ByeBye#########################
-pr_info "It's OVER..."
-exit $?
+#ALL COMPLETE, Summary############################
+##################################################
+echo
+cat <<'EOF'
+ ____                 _ _           
+|  _ \ ___  ___ _   _| | |_ ___   _ 
+| |_) / _ \/ __| | | | | __/ __| (_)
+|  _ <  __/\__ \ |_| | | |_\__ \  _ 
+|_| \_\___||___/\__,_|_|\__|___/ (_)
 
+EOF
+
+tool_results()
+{
+    [ $# -lt 2 ] || { pr_err "lack parameters"; return 1;}
+
+    local tool=$1
+    local done=$2
+
+    case ${done} in
+    0) pr_info "${tool}: Done" ;;
+    1) pr_err  "${tool}: Unfinish" ;;
+    2) pr_warn "${tool}: CHECK version" ;;
+    esac
+}
+
+for i in ${!TOOL_DONE[@]}
+do
+    tool_results $i ${TOOL_DONE[$i]}
+done
+
+exit $?
