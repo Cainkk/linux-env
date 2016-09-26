@@ -1,0 +1,24 @@
+[submodule "Vundle"]
+	path = pandora/vim/bundle/Vundle.vim
+	url = https://github.com/VundleVim/Vundle.vim
+[submodule "nerdtree"]
+	path = pandora/vim/bundle/nerdtree
+	url = https://github.com/scrooloose/nerdtree
+[submodule "matchit.zip"]
+	path = pandora/vim/bundle/matchit.zip
+	url = https://github.com/vim-scripts/matchit.zip
+[submodule "cscope_maps.vim"]
+	path = pandora/vim/bundle/cscope_maps.vim
+	url = https://github.com/Cainkk/cscope_maps.vim
+[submodule "taglist"]
+	path = pandora/vim/bundle/taglist.vim
+	url = https://github.com/vim-scripts/taglist.vim
+[submodule "Tagbar"]
+	path = pandora/vim/bundle/Tagbar
+	url = https://github.com/vim-scripts/Tagbar
+[submodule "ultisnips"]
+	path = pandora/vim/bundle/ultisnips
+	url = https://github.com/SirVer/ultisnips
+[submodule "YouCompleteMe"]
+	path = pandora/vim/bundle/YouCompleteMe
+	url = https://github.com/Valloric/YouCompleteMe
