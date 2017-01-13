@@ -63,12 +63,12 @@ filetype plugin indent on
 """"""""""""""""""""""""""""""""""""""""""""""""""
 se nocp nu ru sc  is hls  ai si cin scs "basic setup
 se hlg=en,cn
-se mouse=h "copy: <S-LClick>
+"se mouse=h "copy: <S-LClick>
 runtime! ftplugin/man.vim
 filetype on
 syntax on
 "only backup origion if no git
-cm bak se bdir+=. pm=.org
+"cm bak se bdir+=. pm=.org
 "backup every time with bex(backupext) option
 "au BufWritePre * let &bex = '-' . strftime("%Y%b%d%X") . '~'
 "se pt=\\p
@@ -79,9 +79,10 @@ cm bak se bdir+=. pm=.org
 "hi DiffDelete ctermbg=DarkCyan guibg=DarkCyan
 "hi DiffChange ctermbg=DarkCyan guibg=DarkCyan
 "hi DiffText   ctermfg=Red ctermbg=DarkCyan guifg=Red guibg=DarkCyan
+hi Normal guifg=#EEEEEE guibg=#002B36
 
 se cul 
-hi cursorline cterm=none ctermbg=0
+hi cursorline cterm=none ctermbg=0 guibg=#073642
 ""(DEFINE statusline)"""""""""""""""""""""""""""""
 hi StatusLine cterm=bold ctermfg=yellow ctermbg=blue
 function! CurDir()
@@ -132,7 +133,6 @@ endif
 
 ""(DEFINE MAPPING)""""""""""""""""""""""""""""""""
 "never set sts (sts: split line into TABs)
-nn <silent> <F12> :se et ts=4 sw=4<CR>
 nn <silent> <S-F12> :se list lcs=tab:>-,trail:-<CR>
 nn <silent> <C-F12> :se nolist<CR>
 nn <silent> [h :noh<CR>
