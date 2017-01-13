@@ -1,0 +1,212 @@
+#!/bin/bash
+#ScriptName: cw(CodeWave)
+#for echo color text display, so using bash
+#Ubuntu will link /bin/sh to /bin/dash
+#set -x
+#
+#---------------------------------------------------------------------#
+#     README                                                          #
+#---------------------------------------------------------------------#
+#     This script combines cscope and ctags utils to view source code #       
+#     It will generate database in ~/.cscope include tags file        #
+#     You can use key mapping in this plugin downloaded by:           #
+#+++  wget http://cscope.sourceforge.net/cscope_maps.vim              #
+#     Recommand: modify variable in cscope_maps.vim, here is:         #
+#     csto=1, because tags optimizes result for lookup                #
+#---------------------------------------------------------------------#
+#+++  Usage: first time, type "cw [-h]" for help                      #
+#---------------------------------------------------------------------#
+#     Enjoy!                                                          #
+#---------------------------------------------------------------------#
+
+#Ensure cscope and ctags exist
+{
+type cscope &>/dev/null
+if [ $? -ne 0 ];then
+    echo "cscope do not exist!"
+    exit 1
+fi
+
+has_ctags=0;
+type ctags &>/dev/null
+if [ $? -ne 0 ];then
+    has_ctags=0;
+    echo "ctags do not exist but continue..."
+else
+    has_ctags=1;
+fi
+}
+
+#initial cscope database home directory
+{
+    CSHOME_DB=~/.cscope
+    if [ ! -e "$CSHOME_DB" ];then
+        eval mkdir -p $CSHOME_DB #&& cd $CSHOME_DB, DO NOT change right now
+    elif [ ! -d "$CSHOME_DB" ];then
+        echo "$CSHOME_DB exists but is not directory"
+        echo "you have to remove it..."
+        exit 1
+    fi  
+}
+
+####################FUNC BEGIN####################
+
+function cscope_usage {
+    echo ""
+    echo -e "Usage: cw -[c|d|l|h] [project]"
+    echo ""
+    echo -e "    -\e[0;31;1mc\e[0m : Create the database used by cscope for the \e[0;4mproject\e[0m"
+    echo -e "    -\e[0;31;1md\e[0m : Delete the database used by cscope for the \e[0;4mproject\e[0m"
+    echo -e "    -\e[0;31;1ml\e[0m : List the database used by cscope for the \e[0;4mproject\e[0m"
+    echo -e "    -\e[0;31;1mh\e[0m : For this usage"
+    echo -e "  (\e[0;31;1mproject\e[0m : Source code root directory, default is current directory)"
+}
+
+function cscope_dir_prepare {
+    echo -e "\nStarting to create cscope database for project:"
+    printf "\t%s\n" $@
+    echo
+
+    if `type openssl &>/dev/null`; then
+        new_dir=`echo "$1" | openssl dgst -md5 | awk -F' ' '{if(NF>1){print $NF;} else print $1;}'`
+    else
+        new_dir=$(date +"%Y%m%d%H%M%S")
+    fi
+
+    new_dir="$CSHOME_DB/$new_dir"
+    mkdir -p "$new_dir"
+    if [ $? == 0 ];then
+        rm -rf "$new_dir"/* &>/dev/null
+        local p_file="$new_dir/project_path"
+        for i in "$@"
+        do
+            # why Permission deny in script
+            # but no error in interactive mode
+            echo "$i" >> "$p_file"
+        done
+        chmod 0444 "$p_file"
+    fi
+}
+
+function cscope_do_create {
+    local new_dir
+    cscope_dir_prepare "$@"
+
+    cscope_progressbar &
+    local progress_pid=$!
+    coproc cscope_create_coproc "$@" 2>/dev/null
+#TODO: why kill not all here, has to use PGID?
+    trap "kill -9 -$$ &>/dev/null;echo;exit 1" 1 2 3 15
+    wait $COPROC_PID
+    if [ $? == 0 ];then
+        echo -e "\nCreate database for $1 successfully...\n"
+    else
+        echo -e "\nFailed to create database for $1 ...\n"
+    fi   
+    kill -9 $progress_pid &>/dev/null
+}
+
+function cscope_create_coproc {
+    cd $new_dir
+    find -L "$@" -name ".*"        -prune            \
+              -o -name "*.[c|h|S]" -printf '"%p"\n'  \
+              -o -name "*.cpp"     -printf '"%p"\n'  \
+              -o -name "*.java"    -printf '"%p"\n'  > cscope.files 2>/dev/null
+# cscope -v verbose progress
+# line-oriented: cscope -Rbq[k]
+    cscope -bq && if [ $has_ctags -eq 1 ]; then ctags -L cscope.files; fi
+}
+
+function cscope_progressbar {
+    local g1="----------"
+    local g2='\\\\\\\\\\\\\\\\\\\\'
+    local g3="||||||||||"
+    local g4="//////////"
+    local About=" (about 22mins for 11G source code in CPU 1.8Hz)"
+    local Time="time-consuming"
+    local p_str=
+    local progress=
+    
+    local i=0; local j=0
+    for((i=0;;++i))
+    do
+        let "j=(i%4)+1"
+        progress=g$j
+        p_str="\r\e[3${j}m${!progress}\e[0m   $Time: \e[4m${i}\e[0ms$About"
+        printf -- "$p_str"
+        sleep 1
+    done
+}
+
+
+function cscope_create {
+    local p_dirs=()
+    for i in "$@"
+    do
+        i=`readlink -sne $i`
+        [ $? == 0 ] || { echo "$i not exist"; exit 1;}
+        p_dirs=("${p_dirs[@]}" "$i")
+    done
+    cscope_do_create "${p_dirs[@]}"
+}
+
+function cscope_delete {
+    if [ $# -eq 0 ];then
+        echo "Delete: need one Name"
+        echo ""
+        return 0
+    fi
+    for ((i = 1; i <= $#; i++))
+    do
+        if [ -z "$i" ];then
+            echo "Ignore NULL Name, continue for next to delete"
+        else
+            echo -e "\tBegin delete $CSHOME_DB/$1 wait..."
+            rm -rf $CSHOME_DB/$1
+            echo -e "\tdelete $CSHOME_DB/$1 sucessfully..."
+            echo
+            fi
+    done
+    return 0
+}
+
+function cscope_list {
+    echo "Project in Database:"
+    echo
+    for name in $CSHOME_DB/*
+    do
+#TODO: try array
+        if [ -e $name/project_path ];then
+        echo -e "$(basename $name)\e[35;1m:\e[0m \e[4m$(cat $name/project_path)\e[0m"
+        else
+        echo -e "$(basename $name)\e[35;1m:\e[0m \e[4munfinished index database!!!\e[0m"
+        fi
+    done
+    echo
+    return 0
+}
+
+####################FUNC END####################
+
+# getopt and getopts are complex
+# just in simple operation separately
+
+if [[ $# -eq 0 || "$1" == "-h" ]];then
+    cscope_usage
+elif [ "$1" == "-c" ];then
+    shift
+
+    if [[ -z "$1" || "$1" == "." ]];then
+        cscope_create "`pwd`"
+    else
+        cscope_create "$@"
+    fi
+elif [ "$1" == "-d" ];then
+    shift
+    cscope_delete "$@"
+elif [ "$1" == "-l" ];then
+    cscope_list
+fi
+
+exit
+
