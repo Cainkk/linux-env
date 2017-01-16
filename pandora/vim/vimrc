@@ -2,7 +2,7 @@
 "NOTE: pre-install: [git, curl]
 "Plugins from *github*, *vim-scripts* or local place
 "
-"git clone https://github.com/VundleVim/Vundle.vim.git ~/.vim/bundle
+"git clone https://github.com/VundleVim/Vundle.vim.git ~/.vim/bundle/Vundle.vim
 "
 ":h vundle "More details
 ":PluginList
@@ -43,7 +43,7 @@ call vundle#begin() "can change place
 
   "Plugin 'vim-scripts/cscope_macros.vim' "Fixme
   Plugin 'SirVer/ultisnips'
-  Plugin 'Valloric/YouCompleteMe' "{
+  "Plugin 'Valloric/YouCompleteMe' "{
     "PRE-CONDITION:
     "sudo apt-get install -y libclang-dev build-essential cmake
     "+ python-dev python3-dev
