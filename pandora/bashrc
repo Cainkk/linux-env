@@ -17,8 +17,8 @@ alias cd8="cd ../../../../../../../../"
 alias cd9="cd ../../../../../../../../../"
 alias view="vi -MNn"
 alias r="fc -s"
-function mkcd(){ mkdir -p "$@" && eval cd "\"\$$#\"";}
-function ..(){ cd `eval printf ../%.s {1..$1}`;}
+function mkcd() { mkdir -p "$@" && eval cd "\"\$$#\"";}
+function ..() { cd `eval printf ../%.s {1..$1}`;}
 
 #FIFO, so reverse DIRSTACK
 function cs() {

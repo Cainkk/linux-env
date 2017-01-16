@@ -8,10 +8,7 @@
 	ci = commit
 	de = describe
 	ca = commit --amend
-	cc = commit --amend -c
-	ce = commit --amend -c
 	ch = commit --amend -CHEAD
-	cu = commit --amend -C
 [core]
 	editor = vi
 

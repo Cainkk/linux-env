@@ -25,16 +25,16 @@ EOF
 
 # Things to do
 # 0: done; 1: no; 2: check version
-TOOL_DONE=(
-    "bash"=0
-    "vim"=0
-    "cw"=0
-    "cscope"=0
-    "ctags"=0
-    "global"=0
-    "xterm"=0
-    "tmux"=0
-    "git"
+declare -A TOOL_DONE=(
+    ["bash"]=0
+    ["vim"]=0
+    ["cw"]=0
+    ["cscope"]=0
+    ["ctags"]=0
+    ["global"]=0
+    ["xterm"]=0
+    ["tmux"]=0
+    ["git"]=0
 )
 
 #Colorful Message
@@ -102,17 +102,17 @@ VIMDIR_RC=${VIMDIR}/vimrc
 [ -e "${VIMRC_SAVE}" ] && mv "${VIMRC_SAVE}"{,.`date +%Y-%m-%d-%H-%M-%S`}
 
 #Backup target files
-[ -e "$VIMRC" ] && mv ${VIMRC} ${VIMRC_SAVE}
-[ -d "$VIMDIR" ] && mv ${VIMDIR} ${VIMDIR_SAVE}
+[ -e "$VIMRC" ] && mv --backup=t ${VIMRC} ${VIMRC_SAVE}
+[ -d "$VIMDIR" ] && mv --backup=t ${VIMDIR} ${VIMDIR_SAVE}
 
 #DO what needs to be done
 if [[ "`vim --version | sed -n 1p`" =~ "Vi IMproved "([0-9]+).([0-9]+) ]]; then
     if ((${BASH_REMATCH[1]}>=7 && ${BASH_REMATCH[2]}>=4)); then
         mkdir -p ${VIMDIR}
-        cp -r --backup=old ${PANDORA_VIM}/* ${VIMDIR}
+        cp -r --backup=t ${PANDORA_VIM}/* ${VIMDIR}
         TOOL_DONE["vim"]=0
     else
-        cp -r --backup=old ${PANDORA_VIM_LEGACY}/* ${VIMDIR}
+        cp -r --backup=t ${PANDORA_VIM_LEGACY}/* ${VIMDIR}
         mv ${VIMDIR_RC} ${VIMRC}
         TOOL_DONE["vim"]=2
     fi
@@ -223,7 +223,7 @@ fi
 ##################################################
 PANDORA_TMUXCONF=${PANDORAROOT}/tmux.conf
 TMUXCONF=$HOME/.tmux.conf
-TMUXCONF_SAVE=${TMUX}.save
+TMUXCONF_SAVE=${TMUXCONF}.save
 
 #Backup old .save file
 [ -e "${TMUXCONF_SAVE}" ] && mv "${TMUXCONF_SAVE}"{,.`date +%Y-%m-%d-%H-%M-%S`}
@@ -279,7 +279,7 @@ EOF
 
 tool_results()
 {
-    [ $# -lt 2 ] || { pr_err "lack parameters"; return 1;}
+    [ $# -lt 2 ] && { pr_err "lack parameters"; return 1;}
 
     local tool=$1
     local done=$2
