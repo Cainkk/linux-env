@@ -22,7 +22,7 @@ function ..() { cd `eval printf ../%.s {1..$1}`;}
 
 #FIFO, so reverse DIRSTACK
 function cs() {
-    [ "$1" ] && { dirs -v |sed '1d'; return;}
+    [ "$1" ] || { dirs -v |sed '1d'; return;}
     [ -d "$1" ] || { echo $1 not directory or not exist; return;}
 
     local i l s
