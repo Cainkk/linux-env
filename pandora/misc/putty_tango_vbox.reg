@@ -1,0 +1,29 @@
+Windows Registry Editor Version 5.00
+
+;Based on tango, refs from solarized_dark
+;http://www.xcolors.net
+;https://github.com/altercation/solarized
+;pick putty-colors-solarized
+[HKEY_CURRENT_USER\Software\SimonTatham\PuTTY\Sessions\vbox]
+"Colour0"="170,170,170"  ; fg
+"Colour1"="224,224,224"  ; bg
+"Colour2"="0,43,54"      ;
+"Colour3"="7,54,66"      ; vim currentline
+"Colour4"="0,43,54"      ;
+"Colour5"="0,255,0"      ;
+"Colour6"="7,54,66"      ; color0
+"Colour7"="0,43,54"     ; color8
+"Colour8"="204,0,0"    ; color1
+"Colour9"="239,41,41"    ; color9
+"Colour10"="78,154,6"    ; color2
+"Colour11"="138,226,52"  ; color10
+"Colour12"="196,160,0"   ; color3
+"Colour13"="252,233,79"  ; color11
+"Colour14"="52,101,164"  ; color4
+"Colour15"="115,159,207"  ; color12
+"Colour16"="117,80,123"  ; color5
+"Colour17"="173,127,168" ; color13
+"Colour18"="6,152,154"   ; color6
+"Colour19"="52,226,226"  ; color14
+"Colour20"="211,215,207" ; color7
+"Colour21"="238,238,236" ; color15
