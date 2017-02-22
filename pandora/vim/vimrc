@@ -80,7 +80,6 @@ syntax on
 "hi DiffDelete ctermbg=DarkCyan guibg=DarkCyan
 "hi DiffChange ctermbg=DarkCyan guibg=DarkCyan
 "hi DiffText   ctermfg=Red ctermbg=DarkCyan guifg=Red guibg=DarkCyan
-hi Normal guifg=#EEEEEE guibg=#002B36
 
 se cul 
 hi cursorline cterm=none ctermbg=0 guibg=#073642
@@ -196,4 +195,10 @@ com! -nargs=0 Unix se ff=unix
 
 "Convert dos file to unix
 "se ff=unix
+
+""""""""""""""""""""""""""""""""""""""""""""""""""
+""""""""""""""""""""""""""""""""""""""""""""""""""
+" GUI Configuration
+hi Normal guifg=#AAAAAA guibg=#002B36
+se gfn=DejaVu\ LGC\ Sans\ Mono\ 12
 
