@@ -41,8 +41,9 @@ call vundle#begin() "can change place
     let g:tagbar_width = 25
   "}
 
+  Plugin 'Cainkk/cscope_maps.vim'
   "Plugin 'vim-scripts/cscope_macros.vim' "Fixme
-  Plugin 'SirVer/ultisnips'
+  "Plugin 'SirVer/ultisnips'
   "Plugin 'Valloric/YouCompleteMe' "{
     "PRE-CONDITION:
     "sudo apt-get install -y libclang-dev build-essential cmake
@@ -131,12 +132,6 @@ if exists("+showtabline")
   set stal=1 tabline=%!MyTabLine()
 endif
 
-""(DEFINE MAPPING)""""""""""""""""""""""""""""""""
-"never set sts (sts: split line into TABs)
-nn <silent> <S-F12> :se list lcs=tab:>-,trail:-<CR>
-nn <silent> <C-F12> :se nolist<CR>
-nn <silent> [h :noh<CR>
-
 ""(DEFINE VIM-plugin)"""""""""""""""""""""""""""""
 "Choose taglist OR tagbar plugin
 function s:MyTagOrTreeOpen()
@@ -175,8 +170,12 @@ nmap <silent> <F3> :call <SID>MyTagOrTreeOpen()<CR>
 let &cpo = s:old_cpo
 au! QuickFixCmdPre vimgrep silent! copen 15
 
+""(DEFINE MAPPING)""""""""""""""""""""""""""""""""
+nn <silent> \h :noh<CR>
+nn <silent> \l :se nolist<CR>
+
 ""(DEFINE COMMAND)""""""""""""""""""""""""""""""""
-"Tab setting
+"Tab setting: (never set sts: split line into TABs)
 com! -nargs=0 Tab2 se et ts=2 sw=2
 com! -nargs=0 Tab3 se et ts=3 sw=3
 com! -nargs=0 Tab4 se et ts=4 sw=4
