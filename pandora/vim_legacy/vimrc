@@ -2,7 +2,7 @@
 "NOTE: pre-install: [git, curl]
 "Plugins from *github*, *vim-scripts* or local place
 "
-"git clone https://github.com/VundleVim/Vundle.vim.git ~/.vim/bundle
+"git clone https://github.com/VundleVim/Vundle.vim.git ~/.vim/bundle/Vundle.vim
 "
 ":h vundle "More details
 ":PluginList
@@ -20,7 +20,10 @@ call vundle#begin() "can change place
   Plugin 'scrooloose/nerdtree' "{
     "DO-NOT USE winmanager
     let NERDTreeWinPos = 'left'
-    let NERDTreeWinSize = 25
+    let NERDTreeWinSize = 30
+    let NERDTreeMinimalUI = 1
+    let NERDTreeDirArrows = 1
+    let NERDTreeQuitOnOpen = 1
   "}
 
   Plugin 'vim-scripts/matchit.zip'
@@ -29,7 +32,7 @@ call vundle#begin() "can change place
   Plugin 'vim-scripts/taglist.vim' "{
     "let Tlist_Use_Right_Window = 0 "default is left
     "let Tlist_Ctags_Cmd = '/usr/local/bin/ctags'
-    let Tlist_WinWidth = 25
+    let Tlist_WinWidth = 30
     let Tlist_Exit_OnlyWindow = 1
     let Tlist_Enable_Fold_Column = 0
     let Tlist_Show_One_File = 1
@@ -38,12 +41,13 @@ call vundle#begin() "can change place
   Plugin 'vim-scripts/Tagbar' "{
     "vi -S tagbar.vmb +q
     let g:tagbar_left = 1
-    let g:tagbar_width = 25
+    let g:tagbar_width = 30
   "}
 
+  Plugin 'Cainkk/cscope_maps.vim'
   "Plugin 'vim-scripts/cscope_macros.vim' "Fixme
-  Plugin 'SirVer/ultisnips'
-  Plugin 'Valloric/YouCompleteMe' "{
+  "Plugin 'SirVer/ultisnips'
+  "Plugin 'Valloric/YouCompleteMe' "{
     "PRE-CONDITION:
     "sudo apt-get install -y libclang-dev build-essential cmake
     "+ python-dev python3-dev
@@ -63,12 +67,12 @@ filetype plugin indent on
 """"""""""""""""""""""""""""""""""""""""""""""""""
 se nocp nu ru sc  is hls  ai si cin scs "basic setup
 se hlg=en,cn
-se mouse=h "copy: <S-LClick>
+"se mouse=h "copy: <S-LClick>
 runtime! ftplugin/man.vim
 filetype on
 syntax on
 "only backup origion if no git
-cm bak se bdir+=. pm=.org
+"cm bak se bdir+=. pm=.org
 "backup every time with bex(backupext) option
 "au BufWritePre * let &bex = '-' . strftime("%Y%b%d%X") . '~'
 "se pt=\\p
@@ -81,7 +85,7 @@ cm bak se bdir+=. pm=.org
 "hi DiffText   ctermfg=Red ctermbg=DarkCyan guifg=Red guibg=DarkCyan
 
 se cul 
-hi cursorline cterm=none ctermbg=0
+hi cursorline cterm=none ctermbg=0 guibg=#073642
 ""(DEFINE statusline)"""""""""""""""""""""""""""""
 hi StatusLine cterm=bold ctermfg=yellow ctermbg=blue
 function! CurDir()
@@ -130,13 +134,6 @@ if exists("+showtabline")
   set stal=1 tabline=%!MyTabLine()
 endif
 
-""(DEFINE MAPPING)""""""""""""""""""""""""""""""""
-"never set sts (sts: split line into TABs)
-nn <silent> <F12> :se et ts=4 sw=4<CR>
-nn <silent> <S-F12> :se list lcs=tab:>-,trail:-<CR>
-nn <silent> <C-F12> :se nolist<CR>
-nn <silent> [h :noh<CR>
-
 ""(DEFINE VIM-plugin)"""""""""""""""""""""""""""""
 "Choose taglist OR tagbar plugin
 function s:MyTagOrTreeOpen()
@@ -175,8 +172,17 @@ nmap <silent> <F3> :call <SID>MyTagOrTreeOpen()<CR>
 let &cpo = s:old_cpo
 au! QuickFixCmdPre vimgrep silent! copen 15
 
+""(DEFINE MAPPING)""""""""""""""""""""""""""""""""
+"if exists("mapleader") | let s:MAPLEADER = mapleader | endif
+let mapleader = "\<Space>"
+nn <silent> <Leader>v :NERDTreeFind<CR>
+nn <silent> <Leader>h :noh<CR>
+nn <silent> <Leader>l :se list lcs=tab:>-,trail:-<CR>
+nn <silent> <Leader>L :se nolist<CR>
+"if exists("MAPLEADER") | let mapleader = s:MAPLEADER | unl! s:MAPLERADER | el | unl! mapleader | endif
+
 ""(DEFINE COMMAND)""""""""""""""""""""""""""""""""
-"Tab setting
+"Tab setting: (never set sts: split line into TABs)
 com! -nargs=0 Tab2 se et ts=2 sw=2
 com! -nargs=0 Tab3 se et ts=3 sw=3
 com! -nargs=0 Tab4 se et ts=4 sw=4
@@ -197,4 +203,10 @@ com! -nargs=0 Unix se ff=unix
 
 "Convert dos file to unix
 "se ff=unix
+
+""""""""""""""""""""""""""""""""""""""""""""""""""
+""""""""""""""""""""""""""""""""""""""""""""""""""
+" GUI Configuration
+hi Normal guifg=#AAAAAA guibg=#002B36
+se gfn=DejaVu\ LGC\ Sans\ Mono\ 12
 

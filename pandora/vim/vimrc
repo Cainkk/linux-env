@@ -20,7 +20,10 @@ call vundle#begin() "can change place
   Plugin 'scrooloose/nerdtree' "{
     "DO-NOT USE winmanager
     let NERDTreeWinPos = 'left'
-    let NERDTreeWinSize = 25
+    let NERDTreeWinSize = 30
+    let NERDTreeMinimalUI = 1
+    let NERDTreeDirArrows = 1
+    let NERDTreeQuitOnOpen = 1
   "}
 
   Plugin 'vim-scripts/matchit.zip'
@@ -29,7 +32,7 @@ call vundle#begin() "can change place
   Plugin 'vim-scripts/taglist.vim' "{
     "let Tlist_Use_Right_Window = 0 "default is left
     "let Tlist_Ctags_Cmd = '/usr/local/bin/ctags'
-    let Tlist_WinWidth = 25
+    let Tlist_WinWidth = 30
     let Tlist_Exit_OnlyWindow = 1
     let Tlist_Enable_Fold_Column = 0
     let Tlist_Show_One_File = 1
@@ -38,7 +41,7 @@ call vundle#begin() "can change place
   Plugin 'vim-scripts/Tagbar' "{
     "vi -S tagbar.vmb +q
     let g:tagbar_left = 1
-    let g:tagbar_width = 25
+    let g:tagbar_width = 30
   "}
 
   Plugin 'Cainkk/cscope_maps.vim'
@@ -90,7 +93,7 @@ function! CurDir()
   return curdir
 endfunction
 "TODO: How to split too long line
-se ls=2 stl=[%n][%{&ff}]\ %f%y%m%r%h\ \|PWD:\ %{CurDir()}\ \|%=\|%l,%c\ %p%%\ \|ascii=%b,hex=%B\ \|%{&fenc}
+se ls=2 stl=[%n][%{&ff},\ %{&fenc}]\ %f%y%m%r%h\ \|PWD:\ %{CurDir()}\ \|%=\|%l,%c\ %p%%
 ""(DEFINE tabline)""""""""""""""""""""""""""""""""
 hi TabLineSel  term=bold cterm=bold ctermfg=Black ctermbg=DarkMagenta
 hi TabLine     term=bold cterm=bold ctermfg=Black ctermbg=White
@@ -170,8 +173,13 @@ let &cpo = s:old_cpo
 au! QuickFixCmdPre vimgrep silent! copen 15
 
 ""(DEFINE MAPPING)""""""""""""""""""""""""""""""""
-nn <silent> \h :noh<CR>
-nn <silent> \l :se nolist<CR>
+"if exists("mapleader") | let s:MAPLEADER = mapleader | endif
+let mapleader = "\<Space>"
+nn <silent> <Leader>v :NERDTreeFind<CR>
+nn <silent> <Leader>h :noh<CR>
+nn <silent> <Leader>l :se list lcs=tab:>-,trail:-<CR>
+nn <silent> <Leader>L :se nolist<CR>
+"if exists("MAPLEADER") | let mapleader = s:MAPLEADER | unl! s:MAPLERADER | el | unl! mapleader | endif
 
 ""(DEFINE COMMAND)""""""""""""""""""""""""""""""""
 "Tab setting: (never set sts: split line into TABs)
