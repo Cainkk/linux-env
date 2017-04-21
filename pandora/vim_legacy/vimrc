@@ -93,7 +93,7 @@ function! CurDir()
   return curdir
 endfunction
 "TODO: How to split too long line
-se ls=2 stl=[%n][%{&ff}]\ %f%y%m%r%h\ \|PWD:\ %{CurDir()}\ \|%=\|%l,%c\ %p%%\ \|ascii=%b,hex=%B\ \|%{&fenc}
+se ls=2 stl=[%n][%{&ff},\ %{&fenc}]\ %f%y%m%r%h\ \|PWD:\ %{CurDir()}\ \|%=\|%l,%c\ %p%%
 ""(DEFINE tabline)""""""""""""""""""""""""""""""""
 hi TabLineSel  term=bold cterm=bold ctermfg=Black ctermbg=DarkMagenta
 hi TabLine     term=bold cterm=bold ctermfg=Black ctermbg=White
@@ -176,9 +176,9 @@ au! QuickFixCmdPre vimgrep silent! copen 15
 "if exists("mapleader") | let s:MAPLEADER = mapleader | endif
 let mapleader = "\<Space>"
 nn <silent> <Leader>v :NERDTreeFind<CR>
-nn <silent> <Leader>h :noh<CR>
 nn <silent> <Leader>l :se list lcs=tab:>-,trail:-<CR>
-nn <silent> <Leader>L :se nolist<CR>
+nn <silent> \h :noh<CR>
+nn <silent> \l :se nolist<CR>
 "if exists("MAPLEADER") | let mapleader = s:MAPLEADER | unl! s:MAPLERADER | el | unl! mapleader | endif
 
 ""(DEFINE COMMAND)""""""""""""""""""""""""""""""""

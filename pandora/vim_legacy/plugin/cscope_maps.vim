@@ -167,11 +167,17 @@ function! s:Is_matched_project(cur, project)
     let l:srcplist = readfile(a:project . "/" . "project_path", '', l:num_files)
     let l:singlep = ""
     let l:i = 0
+    let l:char = ""
 
     for l:singlep in l:srcplist
         if match(a:cur, l:singlep) != -1
-            " success
-            return l:i
+            let l:char = strpart(a:cur, strlen(l:singlep), 1)
+            " ec l:char
+            " exactly match the last DIR component
+            if (l:char == "" || l:char == "/")
+                " success
+                return l:i
+            endif
         endif
         let l:i += 1
     endfor
