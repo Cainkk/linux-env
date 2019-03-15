@@ -1,3 +1,18 @@
+Target: Ubuntu 14.04
+
+1. Establishing a Build Environment
+# https://source.android.com/setup/build/initializing
+$ sudo apt-get install -y git-core gnupg flex bison gperf build-essential zip curl \
+  zlib1g-dev gcc-multilib g++-multilib libc6-dev-i386 lib32ncurses5-dev x11proto-core-dev \
+  libx11-dev lib32z-dev libgl1-mesa-dev libxml2-utils xsltproc unzip
+
+2. Run apps on a hardware device
+# https://developer.android.com/studio/run/device.html
+# https://developer.android.com/studio/run/oem-usb.html
+$ apt-get install adb
+Q: error: insufficient permissions for device: udev requires plugdev group membership
+$ id # what groups you are in
+$ sudo usermod -aG plugdev $LOGNAME
 Target: Ubuntu 10.04
 >>Tips: Install ubuntu10.04-64 on XP is OK, ubuntu12.04-64 CANNOT(2012.5.20)
 1. update sources.list
@@ -69,6 +84,10 @@ Target: Ubuntu 10.04
 	   >>> fdisk and mkfs.vfat -F32 -n ubuntu_live
 	   >>> sudo grub-install --root-directory=/path/mountpoint device_point
 	   >>> substitude boot/grub/grub.cfg
+9. install google chrome
+	wget https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb
+	sudo dpkg -i google-chrome-stable_current_amd64.deb
+	sudo apt install -f
 
 --------------------------------------------------------------------------------
 Target: Android Develop Env, Ubuntu10.04

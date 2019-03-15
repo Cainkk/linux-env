@@ -6,11 +6,12 @@
 	s = status
 	co = checkout
 	ci = commit
-	de = describe
 	ca = commit --amend
-	ch = commit --amend -CHEAD
+	de = describe
 [core]
 	editor = vi
+[color]
+	ui = auto
 
 ##################################################
 #GIT TIPS BUILD-UP################################
