@@ -40,9 +40,34 @@ sudo apt-get install -y vim-gtk emacs
 # install ctags/cscope/xcscope-el
 sudo apt-get install -y exuberant-ctags cscope xcscope-el
 
+# smb configuration
 # https://help.ubuntu.com/community/How%20to%20Create%20a%20Network%20Share%20Via%20Samba%20Via%20CLI%20%28Command-line%20interface/Linux%20Terminal%29%20-%20Uncomplicated%2C%20Simple%20and%20Brief%20Way%21
 sudo apt-get install -y samba smbclient
-# install wubi
+sudo smbpasswd -a <user_name>
+sudo vi /etc/samba/smb.conf # added in the very end of file
+cat <<-EOF
+[htc_dcf_home]
+   comment = dcf private home directory
+   path = /home/dcf/
+   browseable = yes
+   read only = no
+   valid users = dcf
+EOF
+
+sudo service smbd restart
+
+sudo apt-get install smbclient
+# List all shares:
+smbclient -L //<HOST_IP_OR_NAME>/<folder_name> -U <user>
+# connect:
+smbclient //<HOST_IP_OR_NAME>/<folder_name> -U <user>
+
+# install input-method wubi
+sudo apt-get purge ibus
+sudo apt-get install -y fcitx fcitx-config-common fcitx-table fcitx-table-wbpy
+im-config -n fcitx # from ubuntu15.04, old is im-switch
+# logout and relogin
+
 
 # private linux environment
 git clone https://github.com/Cainkk/linux-env.git
