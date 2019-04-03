@@ -1,1 +1,8 @@
 copy these to $HOME/.emacs.d directory
+
+Additional tools to install:
+On Ubuntu:
+1. sudo apt-get install -y emacs
+2. sudo apt-get install -y xcscope-el
+3. sudo apt-get install -y exuberant-ctags
+
