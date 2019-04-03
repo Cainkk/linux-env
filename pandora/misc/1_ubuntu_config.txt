@@ -79,6 +79,8 @@ cd linux-env
 git config user.email junyidcf@163.com
 git config user.name junyidcf
 
+# ramparser
+git clone git://codeaurora.org/quic/la/platform/vendor/qcomopensource/tools
 
 ##################################################
 
