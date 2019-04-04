@@ -1,5 +1,5 @@
 "Vundle {{{
-if isdirectory("~/.vim/bundle/Vundle.vim")
+if isdirectory(expand("$HOME/.vim/bundle/Vundle.vim"))
 "NOTE: pre-install: [git, curl]
 "Plugins from *github*, *vim-scripts* or local place
 "
