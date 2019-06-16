@@ -1,3 +1,6 @@
+##################################################
+# 2019.03.29 Seal
+##################################################
 Target: Ubuntu 18.04
 
 sudo apt-get update
@@ -82,6 +85,12 @@ git config user.name junyidcf
 # ramparser
 git clone git://codeaurora.org/quic/la/platform/vendor/qcomopensource/tools
 
+# share mouse/keyboard
+# windows: install: https://sourceforge.net/projects/synergy-stable-builds/
+# Ubuntu: https://help.ubuntu.com/community/SynergyHowto
+#         https://help.ubuntu.com/community/UsingTheTerminal
+$ sudo apt-get -y install quicksynergy # enough/simple, but stable when compared to synergy
+
 ##################################################
 
 
@@ -89,7 +98,7 @@ git clone git://codeaurora.org/quic/la/platform/vendor/qcomopensource/tools
 
 
 ##################################################
-# 2019.03.29 Seal
+# before 2019.03.29
 ##################################################
 Target: Ubuntu 14.04
 
