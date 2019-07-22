@@ -5,6 +5,12 @@ Target: Ubuntu 18.04
 
 sudo apt-get update
 sudo apt-get install -f
+sudo apt --fix-broken install
+
+# synergy to share mouse/keyboard among multiple-PC
+# sudo apt-get install -y synergy # sni-qt if system trays error reported.
+# do not enable SSL in ubuntu when conneted to windows
+# windows synergy insall
 
 # ssh
 # sudo apt-get install -y openssl # try openssl version to check version

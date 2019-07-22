@@ -2,6 +2,10 @@
 #
 # $ vim +'$r bashrc' +x
 #
+#Tips#############################################
+# install theme for Gnome-Terminal
+# bash -c  "$(wget -qO- https://git.io/vQgMr)"
+# sudo usermod -aG plugdev $LOGNAME
 #COMMON###########################################
 #Anywhere
 #export PS1='\[\e[0m\]\[\e[1;33m\]\u\[\e[1;34m\]@\[\e[1;33m\]\h\[\e[0;32m\][\A]\[\e[0m\]:\w\$ '
