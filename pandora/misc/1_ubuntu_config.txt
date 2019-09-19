@@ -38,6 +38,8 @@ sudo apt-get install -y openjdk-8-jdk # Android 7.0, 8.0
 
 # repo
 curl https://storage.googleapis.com/git-repo-downloads/repo > ~/bin/repo
+# export REPO_URL='https://mirrors.tuna.tsinghua.edu.cn/git/git-repo/' # alternative in case
+curl https://mirrors.tuna.tsinghua.edu.cn/git/git-repo -o repo
 chmod +x ~/bin/repo
 
 # adb
@@ -81,6 +83,9 @@ sudo apt-get install -y fcitx fcitx-config-common fcitx-table fcitx-table-wbpy
 im-config -n fcitx # from ubuntu15.04, old is im-switch
 # logout and relogin
 
+# change dash to bash
+sudo dpkg-reconfigure dash # select no
+sudo ln -sf /bin/bash /bin/sh
 
 # private linux environment
 git clone https://github.com/Cainkk/linux-env.git

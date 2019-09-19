@@ -1,6 +1,7 @@
 
 #
-# $ vim +'$r bashrc' +x
+# README:
+# $ vim +'$r bashrc' +x ~/.bashrc
 #
 #Tips#############################################
 # install theme for Gnome-Terminal
