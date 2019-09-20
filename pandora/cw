@@ -151,23 +151,17 @@ function cscope_create {
 }
 
 function cscope_delete {
-    if [ $# -eq 0 ];then
-        echo "Delete: need one Name"
-        echo ""
-        return 0
-    fi
-    for ((i = 1; i <= $#; i++))
+    ((!$#)) && echo No parameters && return 1
+
+    for i in $*
     do
-        if [ -z "$i" ];then
-            echo "Ignore NULL Name, continue for next to delete"
+        if [ -n "$i" -a -d "$CSHOME_DB/$i" ];then
+            echo -e "\tDeleting $CSHOME_DB/$i ..."
+            rm -rf $CSHOME_DB/$i
         else
-            echo -e "\tBegin delete $CSHOME_DB/$1 wait..."
-            rm -rf $CSHOME_DB/$1
-            echo -e "\tdelete $CSHOME_DB/$1 sucessfully..."
-            echo
-            fi
+            echo -e "\tNo such $i, ignore..."
+        fi
     done
-    return 0
 }
 
 function cscope_list {
