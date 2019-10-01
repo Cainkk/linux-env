@@ -1,7 +1,7 @@
 (provide '100-cedet-setting)
 
 ;;(setq byte-compile-warnings nil)
-(setq stack-trace-on-error t)
+;;(setq stack-trace-on-error t) ; FIXME: compile error
 ;;CEDET config
 ;;*MUST READ*: cedet-1.1/{INSTALL,cedet-build.el}
 ;;*compile*: emacs -Q -l cedet-build.el -f cedet-build
@@ -22,7 +22,7 @@
 ;(require 'ede)
 (require 'srecode)
 (require 'cedet)
-(require 'cogre)
+;(require 'cogre) ; FIXME: compile error
 
 ;; Enable EDE (Project Management) features
 (global-ede-mode 1)
@@ -42,7 +42,7 @@
 ;;*compile*: M-x ecb-byte-compile
 ;;modified cedet-version-max in file ecb-upgrade.el.
 (add-to-list 'load-path (concat PPATH "ecb-2.40") t)
-(require 'ecb)
+;;(require 'ecb) ; FIXME: compile error
 (setq ecb-source-path (quote (("d:/MDSS" "MDSS"))))
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Key bindings:
@@ -63,7 +63,7 @@
 ;;*compile*: M-x ecb-byte-compile
 ;;modified cedet-version-max in file ecb-upgrade.el.
 (add-to-list 'load-path (concat PPATH "ecb-2.40") t)
-(require 'ecb)
+; (require 'ecb) ; FIXME: compile error
 (setq ecb-source-path (quote (("d:/MDSS" "MDSS"))))
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Key bindings:
