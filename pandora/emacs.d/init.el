@@ -9,33 +9,41 @@
 ;; You may delete these explanatory comments.
 ;; Add package installation URL over Internet
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
 ;;  Adjust garbage collection thresholds during startup, and thereafter
 (setq gc-cons-threshold most-positive-fixnum)
-;;  If you experience freezing,decrease this.
+;;  If you experience freezing, decrease this.
 ;;  If you experience stuttering, increase this.
 (add-hook 'emacs-startup-hook
-          (lambda () (setq gc-cons-threshold (* 20 1024 1024))))
+          (lambda () (setq gc-cons-threshold (* 32 1024 1024))))
 ;; Emacs "updates" its ui more often than it needs to, so we slow it down
 ;; slightly, from 0.5s:
 (setq idle-update-delay 1)
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-(when (>= emacs-major-version 24); tips: (when (version< emacs-version "26.1")
+(when (>= emacs-major-version 24)
+; tips: (when (version< emacs-version "26.1")
   (require 'package)
   (setq package-enable-at-startup nil)
   (add-to-list 'package-archives '("melpa" . "http://melpa.org/packages/"))
   (package-initialize)) ; M-x list-packages
+
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;(require 'init-benchmarking) ;; Measure startup time
+
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;(defconst EPATH (eval-when-compile (file-truename user-emacs-directory)))
-(defconst EPATH "~/.emacs.d")
-(defconst IPATH (concat EPATH "/init.d"))
-(defconst PPATH (concat IPATH "/plugins"))
-(defconst TPATH (concat PPATH "/themes"))
-(add-to-list 'load-path IPATH t)
-(add-to-list 'load-path PPATH t)
+(defconst EMACS-EPATH (eval-when-compile (file-truename user-emacs-directory)))
+(defconst EMACS-IPATH (eval-when-compile (concat EMACS-EPATH "/init.d")))
+(defconst EMACS-PPATH (eval-when-compile (concat EMACS-IPATH "/plugins")))
+
+;; (defconst EMACS-EPATH "~/.emacs.d")
+;; (defconst EMACS-IPATH (concat EMACS-EPATH "/init.d"))
+;; (defconst EMACS-PPATH (concat EMACS-IPATH "/plugins"))
+;; (defconst EMACS-TPATH (concat EMACS-PPATH "/themes"))
+(add-to-list 'load-path EMACS-IPATH t)
+(add-to-list 'load-path EMACS-PPATH t)
+
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;(defconst EMACS27+ (> emacs-major-version 26))
+(defconst IS-EMACS27+ (> emacs-major-version 26))
 (defconst IS-MAC     (eq system-type 'darwin))
 (defconst IS-LINUX   (eq system-type 'gnu/linux))
 (defconst IS-WINDOWS (memq system-type '(cygwin windows-nt ms-dos)))
@@ -47,6 +55,7 @@
          ;("http" . "proxy:8080") ; proxy
          ;("https" . "proxy:8080") ; proxy
         )))
+
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; from doom-emacs
 ;; This is consulted on every `require', `load' and various path/io functions.
@@ -62,7 +71,7 @@
 
 (eval-when-compile
   (require 'use-package)
-  (setq use-package-always-ensure t) ;; alway ensure packages are installed
+  ; (setq use-package-always-ensure t) ;; alway ensure packages are installed
   (setq use-package-verbose t))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;

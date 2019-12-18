@@ -27,20 +27,20 @@
 )
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; startup from scratch
 ;; Display the bare minimum at startup. We don't need all that noise. The
 ;; dashboard/empty scratch buffer is good enough.
 (setq inhibit-splash-screen t
       inhibit-startup-message t
       inhibit-startup-echo-area-message user-login-name
-      inhibit-default-init t; open to verify it!!!
+      initial-scratch-message nil
       initial-major-mode 'fundamental-mode
-      initial-scratch-message nil)
+      inhibit-default-init t)
 (setq default-major-mode 'text-mode)
 (fset #'display-startup-echo-area-message #'ignore)
-;; Emacs "updates" its ui more often than it needs to, so we slow it down
-;; slightly, from 0.5s:
-(setq idle-update-delay 1)
+
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 (if (fboundp 'menu-bar-mode) (menu-bar-mode -1))
 (if (fboundp 'tool-bar-mode) (tool-bar-mode -1))
@@ -54,10 +54,11 @@
 (set-default-coding-systems 'utf-8-unix)
 (set-language-environment 'UTF-8)
 (set-locale-environment "UTF-8")
-(setq system-time-locale "C")
 (set-terminal-coding-system 'utf-8)
 (set-keyboard-coding-system 'utf-8)
+(setq system-time-locale "C")
 ;; (set-default buffer-file-coding-system 'prefer-utf-8-unix)
+
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ; (add-hook 'text-mode-hook 'turn-on-auto-fill)
 (auto-fill-mode -1)
@@ -66,19 +67,21 @@
 (global-font-lock-mode t)
 (setq-default indicate-empty-lines t)
 (when (not indicate-empty-lines) (toggle-indicate-empty-lines))
-(show-paren-mode t) ; highlight brackets (){}[]...
+;; Buffer settings
+;(setq default-indicate-empty-lines t)
+(show-paren-mode t)
 (setq show-paren-style 'parenthesis)
-(setq echo-keystrokes 0.1 use-dialog-box nil visible-bell t)
-;; (setq default-fill-column 80) ; convenient Keys: C-x f
-(setq scroll-margin 3 scroll-conservatively 10000) ; scrolling
+(setq echo-keystrokes 0.1
+      use-dialog-box nil
+      visible-bell t)
+(setq scroll-margin 3 scroll-conservatively 10000)
 (setq Man-notify-method 'pushy) ; jump to man buffer
-(global-display-line-numbers-mode t); (when (version> "23" emacs-version)); fast
-;(global-linum-mode t); (when (version< "23" emacs-version)); slow
+(if (version< "23" emacs-version)
+    (global-display-line-numbers-mode t)
+    (global-linum-mode t))
 (column-number-mode t)
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 (setq large-file-warning-threshold (* 50 1000 1000))
-;; Buffer settings
-;(setq default-indicate-empty-lines t)
 (setq require-final-newline t)
 ;(setq show-trailing-whitespace t)
 (global-auto-revert-mode t)
@@ -242,73 +245,19 @@
         recentf-max-menu-items 15))
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 (use-package dired
-  :commands dired-mode
-  :bind (:map dired-mode-map ("C-o" . dired-omit-mode))
+  :defer 1
+  ;; :commands dired-mode
+  ;; :bind (:map dired-mode-map ("C-o" . dired-omit-mode))
   :config
   (progn
     (setq dired-dwim-target t)
     (setq-default dired-omit-mode t)
     (setq-default dired-omit-files "^\\.?#\\|^\\.$\\|^\\.\\.$\\|^\\.")
-    (define-key dired-mode-map "i" 'dired-subtree-insert)
-    (define-key dired-mode-map ";" 'dired-subtree-remove)))
-;; (use-package dired-subtree
-;;   :ensure t
-;;   :commands (dired-subtree-insert))
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;;; (use-package org
-;;;   :ensure t
-;;;   :mode ("\\.org\\'" . org-mode)
-;;;   :bind (("C-c l" . org-store-link)
-;;;          ("C-c c" . org-capture)
-;;;          ("C-c a" . org-agenda)
-;;;          ("C-c b" . org-iswitchb)
-;;;          ("C-c C-w" . org-refile)
-;;;          ("C-c j" . org-clock-goto)
-;;;          ("C-c C-x C-o" . org-clock-out))
-;;;   :config
-;;;   (progn
-;;;     ;; The GTD part of this config is heavily inspired by
-;;;     ;; https://emacs.cafe/emacs/orgmode/gtd/2017/06/30/orgmode-gtd.html
-;;;     ;(setq org-directory "~/org")
-;;;     ;(setq org-agenda-files
-;;;     ;      (mapcar (lambda (path) (concat org-directory path))
-;;;     ;              '("/org.org"
-;;;     ;                "/gtd/gtd.org"
-;;;     ;                "/gtd/inbox.org"
-;;;     ;                "/gtd/tickler.org")))
-;;;     (setq org-log-done 'time)
-;;;     (setq org-src-fontify-natively t)
-;;;     (setq org-use-speed-commands t)
-;;;     ;(setq org-capture-templates
-;;;     ;      '(("t" "Todo [inbox]" entry
-;;;     ;         (file+headline "~/org/gtd/inbox.org" "Tasks")
-;;;     ;         "* TODO %i%?")
-;;;     ;        ("T" "Tickler" entry
-;;;     ;         (file+headline "~/org/gtd/tickler.org" "Tickler")
-;;;     ;         "* %i%? \n %^t")))
-;;;     (setq org-refile-targets
-;;;           '(("~/org/gtd/gtd.org" :maxlevel . 3)
-;;;             ("~/org/gtd/someday.org" :level . 1)
-;;;             ("~/org/gtd/tickler.org" :maxlevel . 2)))
-;;;     (setq org-todo-keywords '((sequence "TODO(t)" "WAITING(w)" "|" "DONE(d)" "CANCELLED(c)")))
-;;;     ;(setq org-agenda-custom-commands
-;;;     ;      '(("@" "Contexts"
-;;;     ;         ((tags-todo "@email"
-;;;     ;                     ((org-agenda-overriding-header "Emails")))
-;;;     ;          (tags-todo "@phone"
-;;;     ;                     ((org-agenda-overriding-header "Phone")))))))
-;;;     (setq org-clock-persist t)
-;;;     (org-clock-persistence-insinuate)
-;;;     (setq org-time-clocksum-format '(:hours "%d" :require-hours t :minutes ":%02d" :require-minutes t))))
-;;; (use-package org-inlinetask
-;;;   :bind (:map org-mode-map
-;;;               ("C-c C-x t" . org-inlinetask-insert-task))
-;;;   :after (org)
-;;;   :commands (org-inlinetask-insert-task))
-;;; (use-package org-bullets
-;;;   :ensure t
-;;;   :commands (org-bullets-mode)
-;;;   :init (add-hook 'org-mode-hook (lambda () (org-bullets-mode 1))))
+    ; (define-key dired-mode-map "i" 'dired-subtree-insert)
+    ; (define-key dired-mode-map ";" 'dired-subtree-remove)
+    )
+)
+
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 (use-package org
   :bind (:map org-mode-map
@@ -318,53 +267,44 @@
          ("s-t" . org-todo)
          ("M-[" . org-metaleft)
          ("M-]" . org-metaright))
-  :straight org-plus-contrib
+  ; :straight org-plus-contrib
   :mode ("\\.org$" . org-mode)
   :init
   (setq org-special-ctrl-a/e t)
   (setq org-return-follows-link t)
-
   (setq org-export-dispatch-use-expert-ui t)
-
   (setq org-latex-create-formula-image-program 'imagemagick)
   (setq org-latex-listings 'minted)
   (setq org-tags-column -80)
-
   (setq org-enforce-todo-dependencies t)
   (setq org-enforce-todo-checkbox-dependencies  t)
-
   (setq org-pretty-entities t)
   (setq org-src-fontify-natively t)
   (setq org-list-allow-alphabetical t)
-
   (setq org-deadline-warning-days 7)
-
   (setq org-agenda-custom-commands
-        '(("s" "Schoolwork"
+        '(("w" "work"
            ((agenda "" ((org-agenda-ndays 14)
                         (org-agenda-start-on-weekday nil)
                         (org-agenda-prefix-format " %-12:c%?-12t% s")))
             (tags-todo "CATEGORY=\"Schoolwork\""
                        ((org-agenda-prefix-format "%b")))))
-
           ("r" "Reading"
            ((tags-todo "CATEGORY=\"Reading\""
                        ((org-agenda-prefix-format "%:T ")))))
-          ("m" "Movies"
-           ((tags-todo "CATEGORY=\"Movies\""
-                       ((org-agenda-prefix-format "%:T ")))))))
-    (setq
-     org-latex-pdf-process (list "latexmk -shell-escape -pdf %f")
-
-    org-entities-user
-    '(("supsetneqq" "\\supsetneqq" t "" "[superset of above not equal to]"
-       "[superset of above not equal to]" "⫌")
-      ("subseteq" "\\subseteq" t "" "[subset of above equal to]" "subset of above equal to" "⊆")
-       ("subsetneqq" "\\subsetneqq" t "" "[suberset of above not equal to]"
-         "[suberset of above not equal to]" "⫋")))
+          )
+         )
+   (setq
+    org-latex-pdf-process (list "latexmk -shell-escape -pdf %f")
+    ; org-entities-user
+    )
 
   :config
-  (setq org-agenda-files '("~/agenda/"))
+  (if IS-WINDOWS (setq org-agenda-files (concat (getenv "USERPROFILE") "~/Documents/agenda/")))
+  (setq org-agenda-files '("~/Documents/agenda/"))
+  ;; (setq org-agenda-files '("~/Documents/agenda/"
+  ;;                          ((when IS-WINDOWS
+  ;;                             (concat (getenv "USERPROFILE") "Documents/todo.org"))))
   (plist-put org-format-latex-options :scale 1.5)
 
   (setq org-latex-packages-alist
@@ -425,51 +365,51 @@
     (bind-keys :map org-mode-map
                ("M-o" . ace-link-org))))
 
-(use-package ox-latex
-  :after org)
-
-(use-package ox-bibtex
-  :after org)
-
-(use-package ox-md
-  :after org)
-
-(use-package ob-python
-  :after org
-  :init
-  (setq org-babel-python-command "python3"))
-
-(use-package toc-org
-  :disabled t
-  :after org
-  :config
-  (add-hook 'org-mode-hook 'toc-org-enable))
-
-(use-package evil-org
-  :straight t
-  :after (evil org)
-  :config
-  (add-hook 'org-mode-hook 'evil-org-mode)
-  (evil-org-set-key-theme)
-  (setq evil-org-special-o/O '(table-row)))
-
-(use-package org-tempo
-  :after org)
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-(use-package pdf-tools
-  :straight t
-  :mode ("\\.pdf$" . pdf-view-mode)
-  :config
-  (pdf-tools-install)
-
-  (let ((foreground-orig (car pdf-view-midnight-colors)))
-    (setq pdf-view-midnight-colors
-          (cons "white" "black")))
-
-  (with-eval-after-load 'evil
-      (progn
-        (add-to-list 'evil-emacs-state-modes 'pdf-outline-buffer-mode)
-        (add-to-list 'evil-emacs-state-modes 'pdf-view-mode))))
+;; (use-package ox-latex
+;;   :after org)
+;; 
+;; (use-package ox-bibtex
+;;   :after org)
+;; 
+;; (use-package ox-md
+;;   :after org)
+;; 
+;; (use-package ob-python
+;;   :after org
+;;   :init
+;;   (setq org-babel-python-command "python3"))
+;; 
+;; (use-package toc-org
+;;   :disabled t
+;;   :after org
+;;   :config
+;;   (add-hook 'org-mode-hook 'toc-org-enable))
+;; 
+;; (use-package evil-org
+;;   :straight t
+;;   :after (evil org)
+;;   :config
+;;   (add-hook 'org-mode-hook 'evil-org-mode)
+;;   (evil-org-set-key-theme)
+;;   (setq evil-org-special-o/O '(table-row)))
+;; 
+;; (use-package org-tempo
+;;   :after org)
+;; ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; (use-package pdf-tools
+;;   :straight t
+;;   :mode ("\\.pdf$" . pdf-view-mode)
+;;   :config
+;;   (pdf-tools-install)
+;; 
+;;   (let ((foreground-orig (car pdf-view-midnight-colors)))
+;;     (setq pdf-view-midnight-colors
+;;           (cons "white" "black")))
+;; 
+;;   (with-eval-after-load 'evil
+;;       (progn
+;;         (add-to-list 'evil-emacs-state-modes 'pdf-outline-buffer-mode)
+;;         (add-to-list 'evil-emacs-state-modes 'pdf-view-mode))))
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 (use-package tex
   :ensure auctex
@@ -530,17 +470,17 @@
   :config
     (which-key-mode))
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;(require 'ido-vertical-mode)
-;(setq ido-enable-flex-matching t)
-;(ido-mode 1); (ido-mode -1)
-;(ido-vertical-mode 1)
-;(global-set-key (kbd "M-X") 'smex)
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 (use-package rainbow-delimiters
   :defer 1
   :config
   (add-hook 'prog-mode-hook 'rainbow-delimiters-mode))
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; (require 'ido-vertical-mode)
+;; (setq ido-enable-flex-matching t)
+;; (ido-mode 1); (ido-mode -1)
+;; (ido-vertical-mode 1)
+;; ;(global-set-key (kbd "M-X") 'smex)
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 (use-package ivy
   :ensure t
@@ -643,6 +583,7 @@
 (Tab nil)
 
 (provide '000-emacs-basic-setting)
+
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Tips
