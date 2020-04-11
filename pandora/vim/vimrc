@@ -45,6 +45,9 @@ if isdirectory(expand("$HOME/.vim/bundle/Vundle.vim"))
       let g:tagbar_width = 30
     "}
   
+    Plugin 'dracula/vim', { 'name': 'dracula' }
+    Plugin 'morhetz/gruvbox'", { 'name': 'gruvbox' }
+
     Plugin 'Cainkk/cscope_maps.vim'
     "Plugin 'vim-scripts/cscope_macros.vim' "Fixme
     "Plugin 'SirVer/ultisnips'
@@ -73,6 +76,8 @@ se hlg=en,cn
 runtime! ftplugin/man.vim
 filetype on
 syntax on
+colorscheme dracula
+"colorscheme gruvbox
 "only backup origion if no git
 "cm bak se bdir+=. pm=.org
 "backup every time with bex(backupext) option
